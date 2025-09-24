@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: IS-lab1
+  datasource:
+    url: jdbc:postgresql://localhost:5432/is-lab1
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
