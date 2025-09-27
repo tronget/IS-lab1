@@ -14,11 +14,12 @@ public class Discipline {
     private Long id;
 
     @NotBlank
+    @Column(nullable = false)
     private String name; //Поле не может быть null, Строка не может быть пустой
     private long practiceHours;
     private int selfStudyHours;
     private int labsCount;
 
     @OneToMany(mappedBy = "discipline")
-    private List<Labwork> labworks;
+    private List<LabWork> labWorks;
 }

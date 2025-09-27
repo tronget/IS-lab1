@@ -1,5 +1,6 @@
 package com.tronget.islab1;
 
+import com.tronget.islab1.repository.LabWorkRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

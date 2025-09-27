@@ -2,8 +2,8 @@ spring:
   application:
     name: IS-lab1
   datasource:
-    url: jdbc:postgresql://localhost:5432/is-lab1
-    username: postgres
+    url: jdbc:postgresql://localhost:5432/is_lab1
+    username: tronget
     password: postgres
   jpa:
     hibernate:

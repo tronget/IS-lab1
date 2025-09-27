@@ -12,18 +12,18 @@ import java.util.Date;
 
 @Entity
 @Data
-public class Labwork implements Serializable {
+public class LabWork implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
+    private Long id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
 
     @Column(nullable = false)
     @NotBlank
     private String name; //Поле не может быть null, Строка не может быть пустой
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "coordinates_id")
+    @JoinColumn(name = "coordinates_id", nullable = false)
     @NotNull
     private Coordinates coordinates; //Поле не может быть null
 
