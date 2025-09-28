@@ -29,7 +29,7 @@ public class Person {
     @NotNull
     private Color hairColor; //Поле не может быть null
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "location_id", nullable = false)
     @NotNull
     private Location location; //Поле не может быть null
@@ -42,6 +42,6 @@ public class Person {
     @NotNull
     private Country nationality; //Поле не может быть null
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", cascade = CascadeType.PERSIST)
     private List<LabWork> labWorks;
 }

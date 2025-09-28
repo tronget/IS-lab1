@@ -22,6 +22,6 @@ public class Coordinates {
     @Max(508)
     private Float y; //Максимальное значение поля: 508, Поле не может быть null
 
-    @OneToMany(mappedBy = "coordinates")
+    @OneToMany(mappedBy = "coordinates", cascade = CascadeType.PERSIST)
     private List<LabWork> labWorks;
 }

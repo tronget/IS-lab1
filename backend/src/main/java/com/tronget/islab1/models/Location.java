@@ -30,6 +30,6 @@ public class Location {
     @NotNull
     private String name; //Поле не может быть null
 
-    @OneToMany(mappedBy = "location")
+    @OneToMany(mappedBy = "location", cascade = CascadeType.PERSIST)
     private List<Person> persons;
 }

@@ -22,7 +22,7 @@ public class LabWork implements Serializable {
     @NotBlank
     private String name; //Поле не может быть null, Строка не может быть пустой
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "coordinates_id", nullable = false)
     @NotNull
     private Coordinates coordinates; //Поле не может быть null
@@ -37,7 +37,7 @@ public class LabWork implements Serializable {
     @Enumerated(EnumType.STRING)
     private Difficulty difficulty; //Поле может быть null
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "discipline_id")
     private Discipline discipline; //Поле может быть null
 
@@ -49,7 +49,7 @@ public class LabWork implements Serializable {
 
     private int tunedInWorks;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "author_id", nullable = false)
     @NotNull
     private Person author; //Поле не может быть null

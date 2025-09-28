@@ -20,6 +20,6 @@ public class Discipline {
     private int selfStudyHours;
     private int labsCount;
 
-    @OneToMany(mappedBy = "discipline")
+    @OneToMany(mappedBy = "discipline", cascade = CascadeType.PERSIST)
     private List<LabWork> labWorks;
 }
