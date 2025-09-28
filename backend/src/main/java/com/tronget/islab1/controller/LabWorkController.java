@@ -44,10 +44,11 @@ public class LabWorkController {
     }
 
     @PostMapping
-    public ResponseEntity<LabWork> create(@RequestBody LabWorkRequestDto requestDto) {
+    public ResponseEntity<LabWorkResponseDto> create(@RequestBody LabWorkRequestDto requestDto) {
         LabWork entity = mapper.toEntity(requestDto);
         LabWork saved = service.save(entity);
-        return ResponseEntity.ok(saved);
+        LabWorkResponseDto responseDto = mapper.toResponse(saved);
+        return ResponseEntity.ok(responseDto);
     }
 
     @PutMapping("/{id}")
