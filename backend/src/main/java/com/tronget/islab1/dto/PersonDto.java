@@ -11,6 +11,6 @@ public class PersonDto {
     private Color eyeColor;
     private Color hairColor;
     private LocationDto location;
-    private Float weight;
+    private float weight;
     private Country nationality;
 }

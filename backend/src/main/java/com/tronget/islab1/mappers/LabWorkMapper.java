@@ -26,7 +26,7 @@ public class LabWorkMapper {
         labWork.setMaximumPoint(request.getMaximumPoint());
         labWork.setTunedInWorks(request.getTunedInWorks());
 
-        labWork.setAuthor(resolvePerson(request.getPerson()));
+        labWork.setAuthor(resolvePerson(request.getAuthor()));
         labWork.setDiscipline(resolveDiscipline(request.getDiscipline()));
         labWork.setCoordinates(resolveCoordinates(request.getCoordinates()));
 

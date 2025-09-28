@@ -12,7 +12,7 @@ public class LabWorkRequestDto {
     private double maximumPoint;
     private int tunedInWorks;
 
-    private PersonDto person;
+    private PersonDto author;
     private DisciplineDto discipline;
     private CoordinatesDto coordinates;
 }

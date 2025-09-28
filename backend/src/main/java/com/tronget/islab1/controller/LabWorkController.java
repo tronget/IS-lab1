@@ -15,58 +15,58 @@ import java.util.List;
 @RequestMapping("/api/labworks")
 public class LabWorkController {
 
-    private final LabWorkService labWorkService;
-    private final LabWorkMapper labWorkMapper;
+    private final LabWorkService service;
+    private final LabWorkMapper mapper;
 
     @Autowired
-    public LabWorkController(LabWorkService labWorkService, LabWorkMapper labWorkMapper) {
-        this.labWorkService = labWorkService;
-        this.labWorkMapper = labWorkMapper;
+    public LabWorkController(LabWorkService service, LabWorkMapper mapper) {
+        this.service = service;
+        this.mapper = mapper;
     }
 
     @GetMapping
     public ResponseEntity<List<LabWorkResponseDto>> getAllLabWorks() {
-        List<LabWork> labWorks = labWorkService.findAll();
-        List<LabWorkResponseDto> responseDtos = labWorks.stream().map(labWorkMapper::toResponse).toList();
+        List<LabWork> labWorks = service.findAll();
+        List<LabWorkResponseDto> responseDtos = labWorks.stream().map(mapper::toResponse).toList();
         return ResponseEntity.ok(responseDtos);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LabWorkResponseDto> getLabWork(@PathVariable Long id) {
-        LabWork labWork = labWorkService.findById(id);
+        LabWork labWork = service.findById(id);
 
         if (labWork == null) {
             return ResponseEntity.notFound().build();
         }
 
-        LabWorkResponseDto responseDto = labWorkMapper.toResponse(labWork);
+        LabWorkResponseDto responseDto = mapper.toResponse(labWork);
         return ResponseEntity.ok(responseDto);
     }
 
     @PostMapping
     public ResponseEntity<LabWork> create(@RequestBody LabWorkRequestDto requestDto) {
-        LabWork entity = labWorkMapper.toEntity(requestDto);
-        LabWork saved = labWorkService.save(entity);
+        LabWork entity = mapper.toEntity(requestDto);
+        LabWork saved = service.save(entity);
         return ResponseEntity.ok(saved);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<LabWorkResponseDto> update(@PathVariable Long id, @RequestBody LabWorkRequestDto requestDto) {
-        LabWork entity = labWorkMapper.toEntity(requestDto);
+        LabWork entity = mapper.toEntity(requestDto);
         entity.setId(id);
-        LabWork updated = labWorkService.update(entity);
+        LabWork updated = service.update(entity);
 
         if (updated == null) {
             return ResponseEntity.notFound().build();
         }
 
-        LabWorkResponseDto responseDto = labWorkMapper.toResponse(updated);
+        LabWorkResponseDto responseDto = mapper.toResponse(updated);
         return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        boolean deleted = labWorkService.delete(id);
+        boolean deleted = service.delete(id);
         return deleted == true ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

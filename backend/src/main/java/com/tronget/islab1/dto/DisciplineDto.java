@@ -6,7 +6,7 @@ import lombok.Data;
 public class DisciplineDto {
     private Long id;
     private String name;
-    private Long practiceHours;
-    private Integer selfStudyHours;
-    private Integer labsCount;
+    private long practiceHours;
+    private int selfStudyHours;
+    private int labsCount;
 }
