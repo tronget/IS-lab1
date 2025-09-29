@@ -68,4 +68,17 @@ public class LabWorkServiceImpl implements LabWorkService {
 
         return true;
     }
+
+    @Override
+    public double sumMaximumPoint() {
+        List<LabWork> labworks = repository.findAll();
+
+        double result = labworks
+                .stream()
+                .mapToDouble(LabWork::getMaximumPoint)
+                .reduce((a, b) -> a + b)
+                .orElse(0);
+
+        return result;
+    }
 }

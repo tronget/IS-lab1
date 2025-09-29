@@ -9,4 +9,5 @@ public interface LabWorkService extends FindAllService<LabWork> {
     LabWork save(LabWork labWork);
     LabWork update(Long id, LabWorkRequestDto labWork);
     boolean delete(Long id);
+    double sumMaximumPoint();
 }

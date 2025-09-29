@@ -85,4 +85,10 @@ public class LabWorkController {
 
         return ResponseEntity.notFound().build();
     }
+
+    @GetMapping("/sum-maximum-point")
+    public ResponseEntity<Double> sumMaximumPoint() {
+        Double sum = service.sumMaximumPoint();
+        return ResponseEntity.ok(sum);
+    }
 }
