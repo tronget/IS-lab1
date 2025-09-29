@@ -17,8 +17,7 @@ public class LabWorkMapper {
         this.mapperFactory = mapperFactory;
     }
 
-    public LabWork toEntity(LabWorkRequestDto request) {
-        LabWork labWork = new LabWork();
+    public void setEntityValues(LabWork labWork, LabWorkRequestDto request) {
         labWork.setName(request.getName());
         labWork.setDescription(request.getDescription());
         labWork.setDifficulty(request.getDifficulty());
@@ -29,8 +28,6 @@ public class LabWorkMapper {
         labWork.setAuthor(resolvePerson(request.getAuthor()));
         labWork.setDiscipline(resolveDiscipline(request.getDiscipline()));
         labWork.setCoordinates(resolveCoordinates(request.getCoordinates()));
-
-        return labWork;
     }
 
     private Person resolvePerson(PersonDto dto) {

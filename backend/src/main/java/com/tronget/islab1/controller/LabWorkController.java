@@ -45,7 +45,8 @@ public class LabWorkController {
 
     @PostMapping
     public ResponseEntity<LabWorkResponseDto> create(@RequestBody LabWorkRequestDto requestDto) {
-        LabWork entity = mapper.toEntity(requestDto);
+        LabWork entity = new LabWork();
+        mapper.setEntityValues(entity, requestDto);
         LabWork saved = service.save(entity);
         LabWorkResponseDto responseDto = mapper.toResponse(saved);
         return ResponseEntity.ok(responseDto);
@@ -53,9 +54,8 @@ public class LabWorkController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LabWorkResponseDto> update(@PathVariable Long id, @RequestBody LabWorkRequestDto requestDto) {
-        LabWork entity = mapper.toEntity(requestDto);
-        entity.setId(id);
-        LabWork updated = service.update(entity);
+
+        LabWork updated = service.update(id, requestDto);
 
         if (updated == null) {
             return ResponseEntity.notFound().build();
