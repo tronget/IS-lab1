@@ -7,6 +7,7 @@ import com.tronget.islab1.models.LabWork;
 import com.tronget.islab1.service.LabWorkService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,11 +18,13 @@ public class LabWorkController {
 
     private final LabWorkService service;
     private final LabWorkMapper mapper;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @Autowired
-    public LabWorkController(LabWorkService service, LabWorkMapper mapper) {
+    public LabWorkController(LabWorkService service, LabWorkMapper mapper, SimpMessagingTemplate messagingTemplate) {
         this.service = service;
         this.mapper = mapper;
+        this.messagingTemplate = messagingTemplate;
     }
 
     @GetMapping
@@ -49,6 +52,9 @@ public class LabWorkController {
         mapper.setEntityValues(entity, requestDto);
         LabWork saved = service.save(entity);
         LabWorkResponseDto responseDto = mapper.toResponse(saved);
+
+        messagingTemplate.convertAndSend("/topic/labworks", responseDto);
+
         return ResponseEntity.ok(responseDto);
     }
 
@@ -62,12 +68,21 @@ public class LabWorkController {
         }
 
         LabWorkResponseDto responseDto = mapper.toResponse(updated);
+
+        messagingTemplate.convertAndSend("/topic/labworks", responseDto);
+
         return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         boolean deleted = service.delete(id);
-        return deleted == true ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+
+        if (deleted) {
+            messagingTemplate.convertAndSend("/topic/labworks", "deleted:" + id);
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.notFound().build();
     }
 }
