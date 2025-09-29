@@ -1,7 +1,3 @@
-/* =====================================================================
-   src/components/LabList.jsx
-   Table + client-side pagination, filtering (full-match) and sorting using Material UI
-   ===================================================================== */
 import React, { useEffect, useState, useCallback } from 'react'
 import { labApi, subscribeToWs } from '../api'
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, TextField, Select, MenuItem, Grid, Button, TablePagination, Dialog, DialogTitle, DialogContent } from '@mui/material'
@@ -37,7 +33,26 @@ export default function LabList(){
   }, [])
 
   useEffect(()=>{ fetch() }, [fetch])
-  useEffect(()=>{ const unsub = subscribeToWs(()=>fetch()); return unsub }, [fetch])
+
+  // WebSocket subscription — updates items in real time
+  useEffect(()=>{
+    const unsub = subscribeToWs((msg)=>{
+      // msg can be an object (labwork) or a string like 'deleted:ID'
+      if(typeof msg === 'string' && msg.startsWith('deleted:')){
+        const id = Number(msg.replace('deleted:', ''))
+        setItems(prev => prev.filter(i => i.id !== id))
+        return
+      }
+      // assume object
+      const lw = msg
+      setItems(prev => {
+        const exists = prev.find(p => p.id === lw.id)
+        if(exists) return prev.map(p => p.id === lw.id ? lw : p)
+        return [...prev, lw]
+      })
+    })
+    return unsub
+  }, [])
 
   function applyAll(){
     let result = items.slice()
@@ -50,30 +65,30 @@ export default function LabList(){
 
   function openCreate(){ setEditing(null); setDialogOpen(true) }
   function openEdit(item){ setEditing(item); setDialogOpen(true) }
-  function handleDelete(id){ if(!confirm('Delete?')) return; labApi.remove(id).then(()=>fetch()).catch(e=>alert('Delete failed')) }
+  function handleDelete(id){ if(!confirm('Delete?')) return; labApi.remove(id).then(()=>{/* server will broadcast deletion */}).catch(e=>alert('Delete failed')) }
 
   function handleSave(payload){
     const action = editing ? labApi.update(editing.id, payload) : labApi.create(payload)
-    action.then(()=>{ setDialogOpen(false); fetch() }).catch(e=>{ alert('Error: '+(e?.response?.data?.message||e.message)) })
+    action.then(()=>{ setDialogOpen(false); /* server broadcasts update — list will update via WS */ }).catch(e=>{ alert('Error: '+(e?.response?.data?.message||e.message)) })
   }
 
   return (
     <div>
       <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
-        <Grid>
+        <Grid item>
           <Select value={filterField} onChange={e=>setFilterField(e.target.value)}>
             <MenuItem value="name">name</MenuItem>
             <MenuItem value="description">description</MenuItem>
             <MenuItem value="author.name">author.name</MenuItem>
           </Select>
         </Grid>
-        <Grid>
+        <Grid item>
           <TextField placeholder="Filter (full match)" value={filterValue} onChange={e=>setFilterValue(e.target.value)} />
         </Grid>
-        <Grid>
+        <Grid item>
           <Button variant="outlined" onClick={()=>{ setPage(0) }}>Apply</Button>
         </Grid>
-        <Grid sx={{ ml: 'auto' }}>
+        <Grid item sx={{ ml: 'auto' }}>
           <Select value={sort} onChange={e=>setSort(e.target.value)} displayEmpty>
             <MenuItem value="">Sort (none)</MenuItem>
             <MenuItem value="name,asc">name ↑</MenuItem>

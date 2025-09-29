@@ -1,11 +1,10 @@
 /* =====================================================================
    src/api.js
-   Notes:
-   - Controller base path: /api/labworks
-   - You said you changed DTO to use `author` on server — client uses `author` too now.
-   - Pagination and websockets are not implemented on server yet; client uses client-side pagination.
+   Implements REST client and STOMP/SockJS subscribeToWs
    ===================================================================== */
 import axios from 'axios'
+import { Client } from '@stomp/stompjs'
+import SockJS from 'sockjs-client/dist/sockjs'
 
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080'
 
@@ -15,15 +14,15 @@ export const api = axios.create({
 })
 
 export const labApi = {
-  list: () => api.get('/api/labworks'),
+  list: () => api.get('/api/labworks'), // returns array
   get: (id) => api.get(`/api/labworks/${id}`),
   create: (payload) => api.post('/api/labworks', payload),
   update: (id, payload) => api.put(`/api/labworks/${id}`, payload),
   remove: (id) => api.delete(`/api/labworks/${id}`),
-  // special ops (may not be implemented yet)
+  // special ops (may not be implemented on server yet)
   sumMaxPoints: () => api.get('/api/labworks/sum-maximum-point'),
   groupByDescription: () => api.get('/api/labworks/group-by-description'),
-  countByTunedInWorks: (value) => api.get('/api/labworks/count-by-tunedInWorks', { params: { tunedInWorks: value } }),
+  countByTunedInWorks: (value) => api.get('/api/labworks/count-by-tunedInWorks', { params: { tunedInWorks: value }}),
   addToDiscipline: (labId, disciplineId) => api.post(`/api/labworks/${labId}/add-to-discipline`, { disciplineId }),
   removeFromDiscipline: (labId, disciplineId) => api.post(`/api/labworks/${labId}/remove-from-discipline`, { disciplineId })
 }
@@ -46,25 +45,38 @@ export const locationApi = {
 }
 
 
-// Stub for WebSocket subscription: kept for when server implements it.
-export function subscribeToWs(onMessage) {
-  // no-op for now; server not implemented
-  return () => { }
+// Real STOMP/SockJS subscription helper
+// onMessage will receive either parsed JSON (object) or raw message string
+export function subscribeToWs(onMessage){
+  const url = (API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE) + '/is-lab1'
+  const client = new Client({
+    // use SockJS as underlying websocket factory
+    webSocketFactory: () => new SockJS(url),
+    reconnectDelay: 5000,
+    debug: function (str) { console.debug('[STOMP]', str) }
+  })
+
+  client.onConnect = () => {
+    console.info('STOMP connected')
+    client.subscribe('/topic/labworks', (message) => {
+      const body = message.body
+      if(!body) return
+      try{
+        const parsed = JSON.parse(body)
+        onMessage(parsed)
+      }catch(e){
+        onMessage(body)
+      }
+    })
+  }
+
+  client.onStompError = (frame) => {
+    console.error('STOMP error', frame)
+  }
+
+  client.activate()
+
+  return () => {
+    try{ client.deactivate() }catch(e){ console.warn('Error deactivating stomp', e) }
+  }
 }
-
-
-
-// WebSocket helper (optional — your backend must expose a WS endpoint). If it doesn't, this will fail silently.
-// export function subscribeToWs(onMessage) {
-//   try {
-//     const ws = new WebSocket(API_BASE.replace(/^http/, 'ws') + '/ws/updates')
-//     ws.onopen = () => console.log('ws open')
-//     ws.onmessage = (ev) => {
-//       let obj = null
-//       try { obj = JSON.parse(ev.data) } catch (e) { obj = ev.data }
-//       onMessage(obj)
-//     }
-//     ws.onerror = (e) => console.warn('ws error', e)
-//     return () => ws.close()
-//   } catch (e) { console.warn('ws unavailable', e); return () => { } }
-// }
