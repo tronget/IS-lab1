@@ -97,4 +97,15 @@ public class LabWorkController {
         int result = service.countByTunedInWorks(tunedInWorks);
         return ResponseEntity.ok(result);
     }
+
+    @PutMapping("/{labId}/add-to-discipline/{disciplineId}")
+    public ResponseEntity<Void> addToDiscipline(@PathVariable Long labId, @PathVariable Long disciplineId) {
+        try {
+            service.addToDiscipline(labId, disciplineId);
+            return ResponseEntity.ok().build();
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
 }

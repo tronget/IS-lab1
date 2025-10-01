@@ -2,45 +2,50 @@ package com.tronget.islab1.service;
 
 import com.tronget.islab1.dto.LabWorkRequestDto;
 import com.tronget.islab1.mappers.*;
+import com.tronget.islab1.models.Discipline;
 import com.tronget.islab1.models.LabWork;
+import com.tronget.islab1.repository.DisciplineRepository;
 import com.tronget.islab1.repository.LabWorkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class LabWorkServiceImpl implements LabWorkService {
 
-    private final LabWorkRepository repository;
+    private final LabWorkRepository labWorkRepository;
+    private final DisciplineRepository disciplineRepository;
     private final LabWorkMapper mapper;
 
     @Autowired
-    public LabWorkServiceImpl(LabWorkRepository repository, LabWorkMapper mapper) {
-        this.repository = repository;
+    public LabWorkServiceImpl(LabWorkRepository labWorkRepository,
+                              DisciplineRepository disciplineRepository,
+                              LabWorkMapper mapper) {
+        this.labWorkRepository = labWorkRepository;
+        this.disciplineRepository = disciplineRepository;
         this.mapper = mapper;
     }
 
     @Override
     public List<LabWork> findAll() {
-        return repository.findAll();
+        return labWorkRepository.findAll();
     }
 
     @Override
     public LabWork findById(Long id) {
-        return repository.findById(id).orElse(null);
+        return labWorkRepository.findById(id).orElse(null);
     }
 
     @Override
     public LabWork save(LabWork labWork) {
         Long id = labWork.getId();
         // if we save object with non-existing id -> throw exception
-        if (id != null && !repository.existsById(id)) {
+        if (id != null && !labWorkRepository.existsById(id)) {
             throw new IllegalArgumentException("LabWork with id " + id + " not found.");
         }
-        return repository.save(labWork);
+        return labWorkRepository.save(labWork);
     }
 
     @Override
@@ -50,19 +55,19 @@ public class LabWorkServiceImpl implements LabWorkService {
             return null;
         }
 
-        LabWork existing = repository.findById(id).orElseThrow(
+        LabWork existing = labWorkRepository.findById(id).orElseThrow(
                 () -> new IllegalArgumentException("LabWork with id " + id + " not found.")
         );
 
         mapper.setEntityValues(existing, requestDto);
 
-        return repository.save(existing);
+        return labWorkRepository.save(existing);
     }
 
     @Override
     public boolean delete(Long id) {
         try {
-            repository.deleteById(id);
+            labWorkRepository.deleteById(id);
         } catch (IllegalArgumentException e) {
             return false;
         }
@@ -72,7 +77,7 @@ public class LabWorkServiceImpl implements LabWorkService {
 
     @Override
     public double sumMaximumPoint() {
-        List<LabWork> labworks = repository.findAll();
+        List<LabWork> labworks = labWorkRepository.findAll();
 
         double result = labworks
                 .stream()
@@ -85,7 +90,7 @@ public class LabWorkServiceImpl implements LabWorkService {
 
     @Override
     public int countByTunedInWorks(int tunedInWorks) {
-        List<LabWork> labworks = repository.findAll();
+        List<LabWork> labworks = labWorkRepository.findAll();
         int cnt = 0;
         for (LabWork labWork : labworks) {
             if (labWork.getTunedInWorks() == tunedInWorks) {
@@ -93,5 +98,14 @@ public class LabWorkServiceImpl implements LabWorkService {
             }
         }
         return cnt;
+    }
+
+    @Override
+    public void addToDiscipline(Long labId, Long disciplineId) {
+        LabWork labWork = labWorkRepository.findById(labId).orElseThrow();
+        Discipline discipline = disciplineRepository.findById(disciplineId).orElseThrow();
+
+        labWork.setDiscipline(discipline);
+        labWorkRepository.save(labWork);
     }
 }
