@@ -10,4 +10,5 @@ public interface LabWorkService extends FindAllService<LabWork> {
     LabWork update(Long id, LabWorkRequestDto labWork);
     boolean delete(Long id);
     double sumMaximumPoint();
+    int countByTunedInWorks(int tunedInWorks);
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class LabWorkServiceImpl implements LabWorkService {
@@ -80,5 +81,17 @@ public class LabWorkServiceImpl implements LabWorkService {
                 .orElse(0);
 
         return result;
+    }
+
+    @Override
+    public int countByTunedInWorks(int tunedInWorks) {
+        List<LabWork> labworks = repository.findAll();
+        int cnt = 0;
+        for (LabWork labWork : labworks) {
+            if (labWork.getTunedInWorks() == tunedInWorks) {
+                cnt++;
+            }
+        }
+        return cnt;
     }
 }

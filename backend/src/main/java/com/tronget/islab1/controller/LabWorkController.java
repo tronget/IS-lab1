@@ -91,4 +91,10 @@ public class LabWorkController {
         Double sum = service.sumMaximumPoint();
         return ResponseEntity.ok(sum);
     }
+
+    @GetMapping("/count-by-tunedInWorks")
+    public ResponseEntity<Integer> countByTunedInWorks(@RequestParam Integer tunedInWorks) {
+        int result = service.countByTunedInWorks(tunedInWorks);
+        return ResponseEntity.ok(result);
+    }
 }
