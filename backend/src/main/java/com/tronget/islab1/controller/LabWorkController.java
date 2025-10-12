@@ -6,6 +6,7 @@ import com.tronget.islab1.mappers.LabWorkMapper;
 import com.tronget.islab1.models.LabWork;
 import com.tronget.islab1.service.LabWorkService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +32,13 @@ public class LabWorkController {
     }
 
     @GetMapping
-    public ResponseEntity<List<LabWorkResponseDto>> getAllLabWorks(
+    public ResponseEntity<Page<LabWorkResponseDto>> getAllLabWorks(
             @RequestParam(value = "page", defaultValue = "0") Integer page,
             @RequestParam(value = "size", defaultValue = "5") Integer size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        List<LabWork> labWorks = service.findAll(pageable);
-        List<LabWorkResponseDto> responseDtos = labWorks.stream().map(mapper::toResponse).toList();
+        Page<LabWork> labWorks = service.findAll(pageable);
+        Page<LabWorkResponseDto> responseDtos = labWorks.map(mapper::toResponse);
         return ResponseEntity.ok(responseDtos);
     }
 
