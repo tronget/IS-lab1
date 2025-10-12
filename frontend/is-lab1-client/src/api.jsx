@@ -1,7 +1,3 @@
-/* =====================================================================
-   src/api.js
-   Implements REST client and STOMP/SockJS subscribeToWs
-   ===================================================================== */
 import axios from 'axios'
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client/dist/sockjs'
