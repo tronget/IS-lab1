@@ -7,6 +7,7 @@ import com.tronget.islab1.models.LabWork;
 import com.tronget.islab1.repository.DisciplineRepository;
 import com.tronget.islab1.repository.LabWorkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,11 @@ public class LabWorkServiceImpl implements LabWorkService {
     @Override
     public List<LabWork> findAll() {
         return labWorkRepository.findAll();
+    }
+
+    @Override
+    public List<LabWork> findAll(Pageable pageable) {
+        return labWorkRepository.findAll(pageable).getContent();
     }
 
     @Override
