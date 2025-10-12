@@ -14,7 +14,7 @@ export const api = axios.create({
 })
 
 export const labApi = {
-  list: () => api.get('/api/labworks'), // returns array
+  list: (page = 0, size = 5) => api.get('/api/labworks', { params: { page, size } }), // returns array
   get: (id) => api.get(`/api/labworks/${id}`),
   create: (payload) => api.post('/api/labworks', payload),
   update: (id, payload) => api.put(`/api/labworks/${id}`, payload),
@@ -22,7 +22,7 @@ export const labApi = {
   // special ops (may not be implemented on server yet)
   sumMaxPoints: () => api.get('/api/labworks/sum-maximum-point'),
   groupByDescription: () => api.get('/api/labworks/group-by-description'),
-  countByTunedInWorks: (value) => api.get('/api/labworks/count-by-tunedInWorks', { params: { tunedInWorks: value }}),
+  countByTunedInWorks: (value) => api.get('/api/labworks/count-by-tunedInWorks', { params: { tunedInWorks: value } }),
   addToDiscipline: (labId, disciplineId) => api.put(`/api/labworks/${labId}/add-to-discipline/${disciplineId}`),
   removeFromDiscipline: (labId, disciplineId) => api.delete(`/api/labworks/${labId}/remove-from-discipline/${disciplineId}`)
 }
@@ -47,7 +47,7 @@ export const locationApi = {
 
 // Real STOMP/SockJS subscription helper
 // onMessage will receive either parsed JSON (object) or raw message string
-export function subscribeToWs(onMessage){
+export function subscribeToWs(onMessage) {
   const url = (API_BASE.endsWith('/') ? API_BASE.slice(0, -1) : API_BASE) + '/is-lab1'
   const client = new Client({
     // use SockJS as underlying websocket factory
@@ -60,11 +60,11 @@ export function subscribeToWs(onMessage){
     console.info('STOMP connected')
     client.subscribe('/topic/labworks', (message) => {
       const body = message.body
-      if(!body) return
-      try{
+      if (!body) return
+      try {
         const parsed = JSON.parse(body)
         onMessage(parsed)
-      }catch(e){
+      } catch (e) {
         onMessage(body)
       }
     })
@@ -77,6 +77,6 @@ export function subscribeToWs(onMessage){
   client.activate()
 
   return () => {
-    try{ client.deactivate() }catch(e){ console.warn('Error deactivating stomp', e) }
+    try { client.deactivate() } catch (e) { console.warn('Error deactivating stomp', e) }
   }
 }
