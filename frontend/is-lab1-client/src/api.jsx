@@ -60,7 +60,7 @@ export function subscribeToWs(onMessage) {
       try {
         const parsed = JSON.parse(body)
         onMessage(parsed)
-      } catch (e) {
+      } catch {
         onMessage(body)
       }
     })

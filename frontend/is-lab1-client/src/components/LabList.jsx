@@ -89,11 +89,16 @@ export default function LabList() {
 
   function openCreate() { setEditing(null); setDialogOpen(true) }
   function openEdit(item) { setEditing(item); setDialogOpen(true) }
-  function handleDelete(id) { if (!confirm('Delete?')) return; labApi.remove(id).then(() => {/* server will broadcast deletion */ }).catch(e => alert('Delete failed')) }
+  function handleDelete(id) {
+    if (!confirm('Delete?')) {
+      return
+    }
+    labApi.remove(id).then(() => { alert('Delete successful') }).catch(() => alert('Delete failed'))
+  }
 
   function handleSave(payload) {
     const action = editing ? labApi.update(editing.id, payload) : labApi.create(payload)
-    action.then(() => { setDialogOpen(false); /* server broadcasts update — list will update via WS */ }).catch(e => { alert('Error: ' + (e?.response?.data?.message || e.message)) })
+    action.then(() => setDialogOpen(false)).catch(e => { alert('Error: ' + (e?.response?.data?.message || e.message)) })
   }
 
   const columns = [
