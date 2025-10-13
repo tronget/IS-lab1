@@ -3,6 +3,7 @@ package com.tronget.islab1.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tronget.islab1.dto.LabWorkRequestDto;
 import com.tronget.islab1.dto.LabWorkResponseDto;
+import com.tronget.islab1.exceptions.LabworkNotFoundException;
 import com.tronget.islab1.mappers.LabWorkMapper;
 import com.tronget.islab1.models.LabWork;
 import com.tronget.islab1.service.LabWorkService;
@@ -10,7 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -23,6 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(LabWorkController.class)
 class LabWorkControllerTest {
+
+    @MockitoBean
+    private SimpMessagingTemplate simpMessagingTemplate;
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,12 +52,14 @@ class LabWorkControllerTest {
         LabWorkResponseDto dto = new LabWorkResponseDto();
         dto.setId(1L);
 
-        Mockito.when(service.findAll()).thenReturn(List.of(entity));
+        Page<LabWork> page = new PageImpl<>(List.of(entity));
+
+        Mockito.when(service.findAll(Mockito.any(Pageable.class))).thenReturn(page);
         Mockito.when(mapper.toResponse(entity)).thenReturn(dto);
 
         mockMvc.perform(get("/api/labworks"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").value(1));
+                .andExpect(jsonPath("$.content[0].id").value(1));
     }
 
     @Test
@@ -70,7 +80,7 @@ class LabWorkControllerTest {
 
     @Test
     void getLabWork_notFound() throws Exception {
-        Mockito.when(service.findById(999L)).thenReturn(null);
+        Mockito.when(service.findById(999L)).thenThrow(LabworkNotFoundException.class);
 
         mockMvc.perform(get("/api/labworks/999"))
                 .andExpect(status().isNotFound());
@@ -135,17 +145,11 @@ class LabWorkControllerTest {
 
     @Test
     void deleteLabWork_returnsNoContent() throws Exception {
-        Mockito.when(service.delete(7L)).thenReturn(true);
+        Mockito.doNothing()
+                .when(service)
+                .delete(7L);
 
         mockMvc.perform(delete("/api/labworks/7"))
                 .andExpect(status().isNoContent());
-    }
-
-    @Test
-    void deleteLabWork_notFound() throws Exception {
-        Mockito.when(service.delete(8L)).thenReturn(false);
-
-        mockMvc.perform(delete("/api/labworks/8"))
-                .andExpect(status().isNotFound());
     }
 }

@@ -12,5 +12,5 @@ public interface LabWorkService extends FindAllService<LabWork>, SpecOpsService 
     Page<LabWork> findAll(Pageable pageable);
     LabWork save(LabWork labWork);
     LabWork update(Long id, LabWorkRequestDto labWork);
-    boolean delete(Long id);
+    void delete(Long id);
 }

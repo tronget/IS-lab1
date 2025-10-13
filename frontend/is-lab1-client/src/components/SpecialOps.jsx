@@ -44,8 +44,8 @@ export default function SpecialOps() {
           <Grid item><TextField placeholder="labId" value={labId} onChange={e => setLabId(e.target.value)} /></Grid>
           <Grid item><TextField placeholder="disciplineId" value={discId} onChange={e => setDiscId(e.target.value)} /></Grid>
           <Grid item>
-            <Button onClick={() => labApi.addToDiscipline(labId, discId).then(() => alert('Added')).catch(() => alert('Not implemented on server'))}>Add</Button>
-            <Button sx={{ ml: 1 }} onClick={() => labApi.removeFromDiscipline(labId, discId).then(() => alert('Removed')).catch(() => alert('Not implemented on server'))}>Remove</Button>
+            <Button onClick={() => labApi.addToDiscipline(labId, discId).then(() => alert('Added')).catch(err => { console.log(err); alert(err.response?.data || err) })}>Add</Button>
+            <Button sx={{ ml: 1 }} onClick={() => labApi.removeFromDiscipline(labId, discId).then(() => alert('Removed')).catch(err => alert(err.response?.data || err))}>Remove</Button>
           </Grid>
         </Grid>
       </Paper>

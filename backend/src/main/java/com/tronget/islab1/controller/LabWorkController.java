@@ -14,8 +14,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/labworks")
 public class LabWorkController {
@@ -45,11 +43,6 @@ public class LabWorkController {
     @GetMapping("/{id}")
     public ResponseEntity<LabWorkResponseDto> getLabWork(@PathVariable Long id) {
         LabWork labWork = service.findById(id);
-
-        if (labWork == null) {
-            return ResponseEntity.notFound().build();
-        }
-
         LabWorkResponseDto responseDto = mapper.toResponse(labWork);
         return ResponseEntity.ok(responseDto);
     }
@@ -84,14 +77,10 @@ public class LabWorkController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        boolean deleted = service.delete(id);
+        service.delete(id);
 
-        if (deleted) {
-            messagingTemplate.convertAndSend("/topic/labworks", "deleted:" + id);
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.notFound().build();
+        messagingTemplate.convertAndSend("/topic/labworks", "deleted:" + id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/sum-maximum-point")
@@ -108,12 +97,13 @@ public class LabWorkController {
 
     @PutMapping("/{labId}/add-to-discipline/{disciplineId}")
     public ResponseEntity<Void> addToDiscipline(@PathVariable Long labId, @PathVariable Long disciplineId) {
-        try {
-            service.addToDiscipline(labId, disciplineId);
-            return ResponseEntity.ok().build();
+        service.addToDiscipline(labId, disciplineId);
+        return ResponseEntity.ok().build();
+    }
 
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
-        }
+    @DeleteMapping("/{labId}/remove-from-discipline/{disciplineId}")
+    public ResponseEntity<Void> removeFromDiscipline(@PathVariable Long labId, @PathVariable Long disciplineId) {
+        service.removeFromDiscipline(labId, disciplineId);
+        return ResponseEntity.ok().build();
     }
 }

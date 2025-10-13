@@ -1,6 +1,10 @@
 package com.tronget.islab1.service;
 
 import com.tronget.islab1.dto.LabWorkRequestDto;
+import com.tronget.islab1.exceptions.DisciplineNotFoundException;
+import com.tronget.islab1.exceptions.LabworkNotFoundException;
+import com.tronget.islab1.exceptions.ManualIdAssignmentException;
+import com.tronget.islab1.exceptions.NotFoundException;
 import com.tronget.islab1.mappers.*;
 import com.tronget.islab1.models.Discipline;
 import com.tronget.islab1.models.LabWork;
@@ -13,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class LabWorkServiceImpl implements LabWorkService {
@@ -22,9 +27,11 @@ public class LabWorkServiceImpl implements LabWorkService {
     private final LabWorkMapper mapper;
 
     @Autowired
-    public LabWorkServiceImpl(LabWorkRepository labWorkRepository,
-                              DisciplineRepository disciplineRepository,
-                              LabWorkMapper mapper) {
+    public LabWorkServiceImpl(
+            LabWorkRepository labWorkRepository,
+            DisciplineRepository disciplineRepository,
+            LabWorkMapper mapper
+    ) {
         this.labWorkRepository = labWorkRepository;
         this.disciplineRepository = disciplineRepository;
         this.mapper = mapper;
@@ -42,7 +49,9 @@ public class LabWorkServiceImpl implements LabWorkService {
 
     @Override
     public LabWork findById(Long id) {
-        return labWorkRepository.findById(id).orElse(null);
+        return labWorkRepository
+                .findById(id)
+                .orElseThrow(() -> new LabworkNotFoundException(id));
     }
 
     @Override
@@ -50,7 +59,7 @@ public class LabWorkServiceImpl implements LabWorkService {
         Long id = labWork.getId();
         // if we save object with non-existing id -> throw exception
         if (id != null && !labWorkRepository.existsById(id)) {
-            throw new IllegalArgumentException("LabWork with id " + id + " not found.");
+            throw new ManualIdAssignmentException();
         }
         return labWorkRepository.save(labWork);
     }
@@ -62,9 +71,9 @@ public class LabWorkServiceImpl implements LabWorkService {
             return null;
         }
 
-        LabWork existing = labWorkRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("LabWork with id " + id + " not found.")
-        );
+        LabWork existing = labWorkRepository
+                .findById(id)
+                .orElseThrow(() -> new LabworkNotFoundException(id));
 
         mapper.setEntityValues(existing, requestDto);
 
@@ -72,14 +81,12 @@ public class LabWorkServiceImpl implements LabWorkService {
     }
 
     @Override
-    public boolean delete(Long id) {
-        try {
-            labWorkRepository.deleteById(id);
-        } catch (IllegalArgumentException e) {
-            return false;
+    public void delete(Long id) {
+        if (id == null) {
+            throw new IllegalArgumentException("id must not be null");
         }
 
-        return true;
+        labWorkRepository.deleteById(id);
     }
 
     @Override
@@ -109,10 +116,32 @@ public class LabWorkServiceImpl implements LabWorkService {
 
     @Override
     public void addToDiscipline(Long labId, Long disciplineId) {
-        LabWork labWork = labWorkRepository.findById(labId).orElseThrow();
-        Discipline discipline = disciplineRepository.findById(disciplineId).orElseThrow();
+        LabWork labWork = labWorkRepository
+                .findById(labId)
+                .orElseThrow(() -> new LabworkNotFoundException(labId));
+
+        Discipline discipline = disciplineRepository
+                .findById(disciplineId)
+                .orElseThrow(() -> new DisciplineNotFoundException(disciplineId));
 
         labWork.setDiscipline(discipline);
         labWorkRepository.save(labWork);
+    }
+
+    @Override
+    public void removeFromDiscipline(Long labId, Long disciplineId) {
+        LabWork labWork = labWorkRepository
+                .findById(labId)
+                .orElseThrow(() -> new LabworkNotFoundException(labId));
+
+        Discipline discipline = disciplineRepository
+                .findById(disciplineId)
+                .orElseThrow(() -> new DisciplineNotFoundException(disciplineId));
+
+        if (Objects.equals(labWork.getDiscipline().getId(), discipline.getId())) {
+            labWorkRepository.delete(labWork);
+        } else {
+            throw new IllegalArgumentException("LabWork with id " + labId + " not found in discipline with id " + disciplineId);
+        }
     }
 }
