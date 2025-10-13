@@ -1,5 +1,6 @@
 package com.tronget.islab1.controller;
 
+import com.tronget.islab1.dto.GroupByDescriptionDto;
 import com.tronget.islab1.dto.LabWorkRequestDto;
 import com.tronget.islab1.dto.LabWorkResponseDto;
 import com.tronget.islab1.mappers.LabWorkMapper;
@@ -9,9 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -87,6 +91,11 @@ public class LabWorkController {
     public ResponseEntity<Double> sumMaximumPoint() {
         Double sum = service.sumMaximumPoint();
         return ResponseEntity.ok(sum);
+    }
+
+    @GetMapping("/group-by-description")
+    public ResponseEntity<List<GroupByDescriptionDto>> groupByDescription() {
+        return new ResponseEntity<>(service.groupByDescription(), HttpStatus.OK);
     }
 
     @GetMapping("/count-by-tunedInWorks")

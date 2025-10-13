@@ -1,10 +1,11 @@
 package com.tronget.islab1.service;
 
+import com.tronget.islab1.dto.GroupByDescriptionDto;
 import com.tronget.islab1.dto.LabWorkRequestDto;
+import com.tronget.islab1.dto.LabWorkResponseDto;
 import com.tronget.islab1.exceptions.DisciplineNotFoundException;
 import com.tronget.islab1.exceptions.LabworkNotFoundException;
 import com.tronget.islab1.exceptions.ManualIdAssignmentException;
-import com.tronget.islab1.exceptions.NotFoundException;
 import com.tronget.islab1.mappers.*;
 import com.tronget.islab1.models.Discipline;
 import com.tronget.islab1.models.LabWork;
@@ -16,8 +17,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class LabWorkServiceImpl implements LabWorkService {
@@ -100,6 +104,23 @@ public class LabWorkServiceImpl implements LabWorkService {
                 .orElse(0);
 
         return result;
+    }
+
+    @Override
+    public List<GroupByDescriptionDto> groupByDescription() {
+        List<LabWork> labworks = findAll();
+        Map<String, List<LabWorkResponseDto>> labworksByDescription = labworks
+                .stream().map(mapper::toResponse)
+                .collect(Collectors.groupingBy(LabWorkResponseDto::getDescription));
+
+        List<GroupByDescriptionDto> dtos = new ArrayList<>();
+
+        labworksByDescription.forEach((key, value) -> {
+            GroupByDescriptionDto dto = new GroupByDescriptionDto(key, value);
+            dtos.add(dto);
+        });
+
+        return dtos;
     }
 
     @Override
