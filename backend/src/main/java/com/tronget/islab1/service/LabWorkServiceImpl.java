@@ -12,6 +12,10 @@ import com.tronget.islab1.models.LabWork;
 import com.tronget.islab1.repository.DisciplineRepository;
 import com.tronget.islab1.repository.LabWorkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import static com.tronget.islab1.config.CacheConfig.*;
 
 @Service
 public class LabWorkServiceImpl implements LabWorkService {
@@ -41,24 +47,44 @@ public class LabWorkServiceImpl implements LabWorkService {
         this.mapper = mapper;
     }
 
+
     @Override
     public List<LabWork> findAll() {
         return labWorkRepository.findAll();
     }
+
 
     @Override
     public Page<LabWork> findAll(Pageable pageable) {
         return labWorkRepository.findAll(pageable);
     }
 
+
     @Override
+    @Cacheable(
+            cacheNames = LABWORK_BY_ID,
+            key = "#id",
+            cacheManager = DEFAULT_CACHE_MANAGER
+    )
     public LabWork findById(Long id) {
         return labWorkRepository
                 .findById(id)
                 .orElseThrow(() -> new LabworkNotFoundException(id));
     }
 
+
     @Override
+    @CachePut(
+            cacheNames = LABWORK_BY_ID,
+            key = "#result.id",
+            cacheManager = DEFAULT_CACHE_MANAGER,
+            condition = "#result != null && #result.id != null"
+    )
+    @CacheEvict(
+            cacheNames = COUNT_BY_TUNED_IN,
+            allEntries = true,
+            cacheManager = DEFAULT_CACHE_MANAGER
+    )
     public LabWork save(LabWork labWork) {
         Long id = labWork.getId();
         // if we save object with non-existing id -> throw exception
@@ -68,8 +94,20 @@ public class LabWorkServiceImpl implements LabWorkService {
         return labWorkRepository.save(labWork);
     }
 
+
     @Override
     @Transactional
+    @CachePut(
+            cacheNames = LABWORK_BY_ID,
+            key = "#id",
+            cacheManager = DEFAULT_CACHE_MANAGER,
+            condition = "#result != null && #result.id != null"
+    )
+    @CacheEvict(
+            cacheNames = COUNT_BY_TUNED_IN,
+            allEntries = true,
+            cacheManager = DEFAULT_CACHE_MANAGER
+    )
     public LabWork update(Long id, LabWorkRequestDto requestDto) {
         if (id == null) {
             return null;
@@ -84,7 +122,21 @@ public class LabWorkServiceImpl implements LabWorkService {
         return labWorkRepository.save(existing);
     }
 
+
     @Override
+    @Caching(evict = {
+            @CacheEvict(
+                    cacheNames = LABWORK_BY_ID,
+                    key = "#id",
+                    cacheManager = DEFAULT_CACHE_MANAGER,
+                    condition = "#id != null"
+            ),
+            @CacheEvict(
+                    cacheNames = COUNT_BY_TUNED_IN,
+                    allEntries = true,
+                    cacheManager = DEFAULT_CACHE_MANAGER
+            )
+    })
     public void delete(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("id must not be null");
@@ -124,18 +176,30 @@ public class LabWorkServiceImpl implements LabWorkService {
     }
 
     @Override
+    @Cacheable(
+            cacheNames = COUNT_BY_TUNED_IN,
+            key = "#tunedInWorks",
+            cacheManager = DEFAULT_CACHE_MANAGER
+    )
     public int countByTunedInWorks(int tunedInWorks) {
-        List<LabWork> labworks = labWorkRepository.findAll();
-        int cnt = 0;
-        for (LabWork labWork : labworks) {
-            if (labWork.getTunedInWorks() == tunedInWorks) {
-                cnt++;
-            }
-        }
-        return cnt;
+        return labWorkRepository.countByTunedInWorks(tunedInWorks);
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(
+                    cacheNames = LABWORK_BY_ID,
+                    key = "#labId",
+                    cacheManager = DEFAULT_CACHE_MANAGER,
+                    condition = "#labId != null && #disciplineId != null"
+            ),
+            @CacheEvict(
+                    cacheNames = COUNT_BY_TUNED_IN,
+                    allEntries = true,
+                    cacheManager = DEFAULT_CACHE_MANAGER,
+                    condition = "#labId != null && #disciplineId != null"
+            )
+    })
     public void addToDiscipline(Long labId, Long disciplineId) {
         LabWork labWork = labWorkRepository
                 .findById(labId)
@@ -150,6 +214,20 @@ public class LabWorkServiceImpl implements LabWorkService {
     }
 
     @Override
+    @Caching(evict = {
+            @CacheEvict(
+                    cacheNames = LABWORK_BY_ID,
+                    key = "#labId",
+                    cacheManager = DEFAULT_CACHE_MANAGER,
+                    condition = "#labId != null && #disciplineId != null"
+            ),
+            @CacheEvict(
+                    cacheNames = COUNT_BY_TUNED_IN,
+                    allEntries = true,
+                    cacheManager = DEFAULT_CACHE_MANAGER,
+                    condition = "#labId != null && #disciplineId != null"
+            )
+    })
     public void removeFromDiscipline(Long labId, Long disciplineId) {
         LabWork labWork = labWorkRepository
                 .findById(labId)

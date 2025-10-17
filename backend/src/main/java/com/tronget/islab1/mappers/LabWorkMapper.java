@@ -4,6 +4,7 @@ import com.tronget.islab1.dto.*;
 import com.tronget.islab1.models.*;
 import com.tronget.islab1.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -30,7 +31,7 @@ public class LabWorkMapper {
         labWork.setCoordinates(resolveCoordinates(request.getCoordinates()));
     }
 
-    private Person resolvePerson(PersonDto dto) {
+    private Person resolvePerson(@NonNull PersonDto dto) {
         if (dto.getId() != null) {
             PersonRepository repository = repositoryFactory.getPersonRepository();
             return repository.findById(dto.getId())
@@ -41,7 +42,7 @@ public class LabWorkMapper {
         return mapper.toEntity(dto);
     }
 
-    private Discipline resolveDiscipline(DisciplineDto dto) {
+    private Discipline resolveDiscipline(@NonNull DisciplineDto dto) {
         if (dto.getId() != null) {
             DisciplineRepository repository = repositoryFactory.getDisciplineRepository();
             return repository.findById(dto.getId())
@@ -52,7 +53,7 @@ public class LabWorkMapper {
         return mapper.toEntity(dto);
     }
 
-    private Coordinates resolveCoordinates(CoordinatesDto dto) {
+    private Coordinates resolveCoordinates(@NonNull CoordinatesDto dto) {
         if (dto.getId() != null) {
             CoordinatesRepository repository = repositoryFactory.getCoordinatesRepository();
             return repository.findById(dto.getId())
@@ -63,18 +64,7 @@ public class LabWorkMapper {
         return mapper.toEntity(dto);
     }
 
-    private Location resolveLocation(LocationDto dto) {
-        if (dto.getId() != null) {
-            LocationRepository repository = repositoryFactory.getLocationRepository();
-            return repository.findById(dto.getId())
-                    .orElseThrow(() -> new IllegalArgumentException("Location with id " + dto.getId() + " not found"));
-        }
-
-        LocationMapper mapper = mapperFactory.getLocationMapper();
-        return mapper.toEntity(dto);
-    }
-
-    public LabWorkResponseDto toResponse(LabWork labWork) {
+    public LabWorkResponseDto toResponse(@NonNull LabWork labWork) {
         LabWorkResponseDto response = new LabWorkResponseDto();
         response.setId(labWork.getId());
         response.setName(labWork.getName());
