@@ -9,7 +9,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**") // Apply to all endpoints
-                .allowedOrigins("http://localhost:5173") // Specific allowed origins
+                .allowedOriginPatterns("*") // Specific allowed origins
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS") // Allowed HTTP methods
                 .allowedHeaders("*") // Allowed headers (consider specifying specific headers in production)
                 .allowCredentials(true) // Allow sending cookies and HTTP authentication credentials
