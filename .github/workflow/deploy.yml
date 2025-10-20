@@ -1,0 +1,142 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build-and-test:
+    name: Build and Test Backend & Frontend
+    runs-on: ubuntu-latest
+    env:
+      NODE_OPTIONS: "--max-old-space-size=4096"
+      SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+      SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+      SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Backend
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Build and Test Backend
+        working-directory: ./backend
+        run: ./gradlew clean build
+
+      # Frontend
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend/is-lab1-client
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: ./frontend/is-lab1-client
+        run: npm run build
+
+      - name: Upload backend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend_jar
+          path: backend/build/libs/*.jar
+
+      - name: Upload frontend artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend_dist
+          path: frontend/dist/**
+
+  deploy:
+    name: Deploy to Server
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download backend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: backend_jar
+          path: backend
+
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend_dist
+          path: dist
+
+      - name: Show artifacts (debug)
+        run: |
+          echo "Backend artifact:"
+          ls -la backend || true
+          echo "Frontend artifact:"
+          ls -la dist || true
+          echo "Contents of dist:"
+          find dist -type f | head -10
+
+      - name: Create frontend archive
+        run: |
+          cd dist && tar -czf ../frontend.tar.gz .
+
+      - name: Upload backend jar to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          source: "backend/*"
+          target: "${{ secrets.DEPLOY_PATH }}"
+
+      - name: Clean public_html on server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          script: |
+            echo "Cleaning public_html..."
+            rm -rf ${{ secrets.DEPLOY_PATH }}/../public_html/*
+            mkdir -p ${{ secrets.DEPLOY_PATH }}/../public_html
+            echo "public_html cleaned"
+
+      - name: Upload frontend archive to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          source: "frontend.tar.gz"
+          target: "/tmp"
+
+      - name: Extract archive to public_html
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT }}
+          script: |
+            echo "Extracting frontend files to public_html..."
+            tar -xzf /tmp/frontend.tar.gz -C ${{ secrets.DEPLOY_PATH }}/../public_html/
+
+            echo "Cleaning up archive..."
+            rm -f /tmp/frontend.tar.gz
+
+            echo "Setting permissions..."
+            chmod -R 755 ${{ secrets.DEPLOY_PATH }}/../public_html/
+
+            echo "Final contents of public_html:"
+            ls -la ${{ secrets.DEPLOY_PATH }}/../public_html/
+            echo "Deployment completed successfully!"
