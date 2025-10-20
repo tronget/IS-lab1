@@ -106,8 +106,8 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           script: |
             echo "Cleaning public_html..."
-            rm -rf ${{ secrets.DEPLOY_PATH }}/../public_html/*
-            mkdir -p ${{ secrets.DEPLOY_PATH }}/../public_html
+            rm -rf ${{ secrets.DEPLOY_PATH }}/public_html/*
+            mkdir -p ${{ secrets.DEPLOY_PATH }}/public_html
             echo "public_html cleaned"
 
       - name: Upload frontend archive to server
@@ -129,14 +129,14 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           script: |
             echo "Extracting frontend files to public_html..."
-            tar -xzf /tmp/frontend.tar.gz -C ${{ secrets.DEPLOY_PATH }}/../public_html/
+            tar -xzf /tmp/frontend.tar.gz -C ${{ secrets.DEPLOY_PATH }}/public_html/
 
             echo "Cleaning up archive..."
             rm -f /tmp/frontend.tar.gz
 
             echo "Setting permissions..."
-            chmod -R 755 ${{ secrets.DEPLOY_PATH }}/../public_html/
+            chmod -R 755 ${{ secrets.DEPLOY_PATH }}/public_html/
 
             echo "Final contents of public_html:"
-            ls -la ${{ secrets.DEPLOY_PATH }}/../public_html/
+            ls -la ${{ secrets.DEPLOY_PATH }}/public_html/
             echo "Deployment completed successfully!"
