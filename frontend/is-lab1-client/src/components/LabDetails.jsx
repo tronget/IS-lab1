@@ -75,7 +75,13 @@ export default function LabDetails() {
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid
+          item
+          size={{ xs: 12, md: 8 }}
+          boxShadow={2}
+          p={1.5}
+          borderRadius={1}
+        >
           <Stack spacing={1}>
             <Typography variant="subtitle1">Lab overview</Typography>
             <Divider />
@@ -88,41 +94,13 @@ export default function LabDetails() {
           </Stack>
         </Grid>
 
-        <Grid item xs={12} md={6}>
-          <Stack spacing={1}>
-            <Typography variant="subtitle1">Coordinates</Typography>
-            <Divider />
-            <DetailRow label="ID" value={coordinates.id} />
-            <DetailRow label="X" value={coordinates.x} />
-            <DetailRow label="Y" value={coordinates.y} />
-          </Stack>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Stack spacing={1}>
-            <Typography variant="subtitle1">Author</Typography>
-            <Divider />
-            <DetailRow label="ID" value={author.id} />
-            <DetailRow label="Name" value={author.name} />
-            <DetailRow label="Eye color" value={author.eyeColor} />
-            <DetailRow label="Hair color" value={author.hairColor} />
-            <DetailRow label="Weight" value={author.weight} />
-            <DetailRow label="Nationality" value={author.nationality} />
-          </Stack>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Stack spacing={1}>
-            <Typography variant="subtitle1">Author location</Typography>
-            <Divider />
-            <DetailRow label="ID" value={location.id} />
-            <DetailRow label="Name" value={location.name} />
-            <DetailRow label="X" value={location.x} />
-            <DetailRow label="Y" value={location.y} />
-          </Stack>
-        </Grid>
-
-        <Grid item xs={12}>
+        <Grid
+          item
+          size={{ xs: 12, md: 4 }}
+          boxShadow={2}
+          p={1.5}
+          borderRadius={1}
+        >
           <Stack spacing={1}>
             <Typography variant="subtitle1">Discipline</Typography>
             <Divider />
@@ -137,6 +115,58 @@ export default function LabDetails() {
               value={discipline.selfStudyHours}
             />
             <DetailRow label="Labs count" value={discipline.labsCount} />
+          </Stack>
+        </Grid>
+
+        <Grid
+          item
+          size={{ xs: 12, md: 4 }}
+          boxShadow={2}
+          p={1.5}
+          borderRadius={1}
+        >
+          <Stack spacing={1}>
+            <Typography variant="subtitle1">Coordinates</Typography>
+            <Divider />
+            <DetailRow label="ID" value={coordinates.id} />
+            <DetailRow label="X" value={coordinates.x} />
+            <DetailRow label="Y" value={coordinates.y} />
+          </Stack>
+        </Grid>
+
+        <Grid
+          item
+          size={{ xs: 12, md: 4 }}
+          boxShadow={2}
+          p={1.5}
+          borderRadius={1}
+        >
+          <Stack spacing={1}>
+            <Typography variant="subtitle1">Author</Typography>
+            <Divider />
+            <DetailRow label="ID" value={author.id} />
+            <DetailRow label="Name" value={author.name} />
+            <DetailRow label="Eye color" value={author.eyeColor} />
+            <DetailRow label="Hair color" value={author.hairColor} />
+            <DetailRow label="Weight" value={author.weight} />
+            <DetailRow label="Nationality" value={author.nationality} />
+          </Stack>
+        </Grid>
+
+        <Grid
+          item
+          size={{ xs: 12, md: 4 }}
+          boxShadow={2}
+          p={1.5}
+          borderRadius={1}
+        >
+          <Stack spacing={1}>
+            <Typography variant="subtitle1">Author location</Typography>
+            <Divider />
+            <DetailRow label="ID" value={location.id} />
+            <DetailRow label="Name" value={location.name} />
+            <DetailRow label="X" value={location.x} />
+            <DetailRow label="Y" value={location.y} />
           </Stack>
         </Grid>
       </Grid>

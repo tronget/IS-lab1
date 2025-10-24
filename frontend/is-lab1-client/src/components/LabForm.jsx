@@ -66,6 +66,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
   const [coordsList, setCoordsList] = useState([]);
   const [persons, setPersons] = useState([]);
   const [locations, setLocations] = useState([]);
+  const [descriptionMinRows, setDescriptionMinRows] = useState(1);
 
   useEffect(() => {
     disciplineApi
@@ -255,12 +256,93 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
     onSubmit(payload);
   }
 
+  function LabWorkSection() {
+    return (
+      <Paper sx={{ p: 2, mb: 2 }} variant="outlined">
+        <Typography variant="h6">LabWork</Typography>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid item size={{ xs: 12, md: 6 }}>
+            <TextField
+              label="Name"
+              fullWidth
+              value={form.name}
+              onChange={(e) => change("name", e.target.value)}
+              error={!!errors.name}
+              helperText={errors.name}
+            />
+          </Grid>
+          <Grid item size={{ xs: 12, md: 6 }}>
+            <FormControl fullWidth sx={{ minWidth: 120 }}>
+              <InputLabel>Difficulty</InputLabel>
+              <Select
+                label="Difficulty"
+                value={form.difficulty || ""}
+                onChange={(e) => change("difficulty", e.target.value)}
+              >
+                {difficulties.map((d) => (
+                  <MenuItem key={d} value={d}>
+                    {d || "-"}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+
+          <Grid item size={12}>
+            <TextField
+              label="Description"
+              fullWidth
+              multiline
+              maxRows={20}
+              minRows={descriptionMinRows}
+              value={form.description}
+              onChange={(e) => change("description", e.target.value)}
+              onFocus={() => setDescriptionMinRows(4)}
+              onBlur={() => setDescriptionMinRows(1)}
+              error={!!errors.description}
+              helperText={errors.description}
+            />
+          </Grid>
+
+          <Grid item size={{ xs: 12, md: 4 }}>
+            <TextField
+              label="Minimal Point"
+              fullWidth
+              value={form.minimalPoint}
+              onChange={(e) => change("minimalPoint", e.target.value)}
+              error={!!errors.minimalPoint}
+              helperText={errors.minimalPoint}
+            />
+          </Grid>
+          <Grid item size={{ xs: 12, md: 4 }}>
+            <TextField
+              label="Maximum Point"
+              fullWidth
+              value={form.maximumPoint}
+              onChange={(e) => change("maximumPoint", e.target.value)}
+              error={!!errors.maximumPoint}
+              helperText={errors.maximumPoint}
+            />
+          </Grid>
+          <Grid item size={{ xs: 12, md: 4 }}>
+            <TextField
+              label="Tuned In Works"
+              fullWidth
+              value={form.tunedInWorks}
+              onChange={(e) => change("tunedInWorks", e.target.value)}
+            />
+          </Grid>
+        </Grid>
+      </Paper>
+    );
+  }
+
   function DisciplineSection() {
     return (
       <Paper sx={{ p: 2, mb: 2 }} variant="outlined">
         <Typography variant="h6">Discipline</Typography>
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} md={4}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid item size={12}>
             <FormControl fullWidth>
               <InputLabel>Discipline</InputLabel>
               <Select
@@ -294,7 +376,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
 
           {form.disciplineMode === "new" && (
             <>
-              <Grid item xs={12} md={4}>
+              <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Discipline name"
                   fullWidth
@@ -304,7 +386,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                   helperText={errors.disciplineName}
                 />
               </Grid>
-              <Grid item xs={12} md={2}>
+              <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Practice hours"
                   fullWidth
@@ -314,7 +396,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                   }
                 />
               </Grid>
-              <Grid item xs={12} md={2}>
+              <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Self study hours"
                   fullWidth
@@ -324,7 +406,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                   }
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
+              <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Labs count"
                   fullWidth
@@ -347,8 +429,8 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
     return (
       <Paper sx={{ p: 2, mb: 2 }} variant="outlined">
         <Typography variant="h6">Coordinates</Typography>
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} md={4}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid item size={12}>
             <FormControl fullWidth>
               <InputLabel>Coordinates</InputLabel>
               <Select
@@ -382,7 +464,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
 
           {form.coordinatesMode === "new" && (
             <>
-              <Grid item xs={12} md={4}>
+              <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Coordinates X"
                   fullWidth
@@ -392,7 +474,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                   helperText={errors.coordinatesX}
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
+              <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Coordinates Y"
                   fullWidth
@@ -413,8 +495,8 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
     return (
       <Paper sx={{ p: 2, mb: 2 }} variant="outlined">
         <Typography variant="h6">Author (Person)</Typography>
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid item size={12}>
             <FormControl fullWidth>
               <InputLabel>Author</InputLabel>
               <Select
@@ -448,7 +530,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
 
           {form.authorMode === "new" && (
             <>
-              <Grid item xs={12} md={6}>
+              <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Author name"
                   fullWidth
@@ -458,8 +540,8 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                   helperText={errors.authorName}
                 />
               </Grid>
-              <Grid item xs={12} md={3}>
-                <FormControl fullWidth>
+              <Grid item size={{ xs: 12, md: 3 }}>
+                <FormControl fullWidth sx={{ minWidth: 120 }}>
                   <InputLabel>Eye Color</InputLabel>
                   <Select
                     label="Eye Color"
@@ -474,8 +556,8 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                   </Select>
                 </FormControl>
               </Grid>
-              <Grid item xs={12} md={3}>
-                <FormControl fullWidth>
+              <Grid item size={{ xs: 12, md: 3 }}>
+                <FormControl fullWidth sx={{ minWidth: 120 }}>
                   <InputLabel>Hair Color</InputLabel>
                   <Select
                     label="Hair Color"
@@ -491,7 +573,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12} md={4}>
+              <Grid item size={{ xs: 12, md: 5 }}>
                 <TextField
                   label="Weight"
                   fullWidth
@@ -501,8 +583,8 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                   helperText={errors.authorWeight}
                 />
               </Grid>
-              <Grid item xs={12} md={4}>
-                <FormControl fullWidth>
+              <Grid item size={{ xs: 12, md: 7 }}>
+                <FormControl fullWidth sx={{ minWidth: 120 }}>
                   <InputLabel>Nationality</InputLabel>
                   <Select
                     label="Nationality"
@@ -520,12 +602,12 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                 </FormControl>
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid item size={12}>
                 <Divider sx={{ my: 1 }} />
                 <Typography variant="subtitle1">Location for Author</Typography>
               </Grid>
 
-              <Grid item xs={12} md={6}>
+              <Grid item size={12}>
                 <FormControl fullWidth>
                   <InputLabel>Location</InputLabel>
                   <Select
@@ -547,7 +629,6 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                       }
                     }}
                   >
-                    {/* options */}
                     <MenuItem value="new">Create new location</MenuItem>
                     {locations.map((l) => (
                       <MenuItem key={l.id} value={`existing:${l.id}`}>
@@ -560,7 +641,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
 
               {form.author.locationMode === "new" && (
                 <>
-                  <Grid item xs={12} md={3}>
+                  <Grid item size={{ xs: 12, md: 3 }}>
                     <TextField
                       label="Location X (Double)"
                       fullWidth
@@ -572,7 +653,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                       helperText={errors.locationX}
                     />
                   </Grid>
-                  <Grid item xs={12} md={3}>
+                  <Grid item size={{ xs: 12, md: 3 }}>
                     <TextField
                       label="Location Y (Long)"
                       fullWidth
@@ -584,7 +665,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                       helperText={errors.locationY}
                     />
                   </Grid>
-                  <Grid item xs={12} md={6}>
+                  <Grid item size={{ xs: 12, md: 6 }}>
                     <TextField
                       label="Location name"
                       fullWidth
@@ -607,78 +688,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
 
   return (
     <form onSubmit={submit}>
-      <Paper sx={{ p: 2, mb: 2 }} variant="outlined">
-        <Typography variant="h6">LabWork</Typography>
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Name"
-              fullWidth
-              value={form.name}
-              onChange={(e) => change("name", e.target.value)}
-              error={!!errors.name}
-              helperText={errors.name}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>Difficulty</InputLabel>
-              <Select
-                label="Difficulty"
-                value={form.difficulty || ""}
-                onChange={(e) => change("difficulty", e.target.value)}
-              >
-                {difficulties.map((d) => (
-                  <MenuItem key={d} value={d}>
-                    {d || "-"}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12}>
-            <TextField
-              label="Description"
-              fullWidth
-              value={form.description}
-              onChange={(e) => change("description", e.target.value)}
-              error={!!errors.description}
-              helperText={errors.description}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <TextField
-              label="Minimal Point"
-              fullWidth
-              value={form.minimalPoint}
-              onChange={(e) => change("minimalPoint", e.target.value)}
-              error={!!errors.minimalPoint}
-              helperText={errors.minimalPoint}
-            />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField
-              label="Maximum Point"
-              fullWidth
-              value={form.maximumPoint}
-              onChange={(e) => change("maximumPoint", e.target.value)}
-              error={!!errors.maximumPoint}
-              helperText={errors.maximumPoint}
-            />
-          </Grid>
-          <Grid item xs={12} md={4}>
-            <TextField
-              label="Tuned In Works"
-              fullWidth
-              value={form.tunedInWorks}
-              onChange={(e) => change("tunedInWorks", e.target.value)}
-            />
-          </Grid>
-        </Grid>
-      </Paper>
-
+      {LabWorkSection()}
       {DisciplineSection()}
       {CoordinatesSection()}
       {AuthorSection()}
