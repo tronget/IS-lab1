@@ -307,6 +307,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
           <Grid item size={{ xs: 12, md: 4 }}>
             <TextField
               label="Minimal Point"
+              type="number"
               fullWidth
               value={form.minimalPoint}
               onChange={(e) => change("minimalPoint", e.target.value)}
@@ -317,6 +318,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
           <Grid item size={{ xs: 12, md: 4 }}>
             <TextField
               label="Maximum Point"
+              type="number"
               fullWidth
               value={form.maximumPoint}
               onChange={(e) => change("maximumPoint", e.target.value)}
@@ -327,6 +329,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
           <Grid item size={{ xs: 12, md: 4 }}>
             <TextField
               label="Tuned In Works"
+              type="number"
               fullWidth
               value={form.tunedInWorks}
               onChange={(e) => change("tunedInWorks", e.target.value)}
@@ -389,6 +392,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
               <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Practice hours"
+                  type="number"
                   fullWidth
                   value={form.discipline.practiceHours}
                   onChange={(e) =>
@@ -399,6 +403,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
               <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Self study hours"
+                  type="number"
                   fullWidth
                   value={form.discipline.selfStudyHours}
                   onChange={(e) =>
@@ -409,6 +414,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
               <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Labs count"
+                  type="number"
                   fullWidth
                   value={form.discipline.labsCount}
                   onChange={(e) =>
@@ -467,6 +473,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
               <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Coordinates X"
+                  type="number"
                   fullWidth
                   value={form.coordinates.x}
                   onChange={(e) => change("coordinates.x", e.target.value)}
@@ -477,6 +484,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
               <Grid item size={{ xs: 12, md: 6 }}>
                 <TextField
                   label="Coordinates Y"
+                  type="number"
                   fullWidth
                   value={form.coordinates.y}
                   onChange={(e) => change("coordinates.y", e.target.value)}
@@ -576,6 +584,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
               <Grid item size={{ xs: 12, md: 5 }}>
                 <TextField
                   label="Weight"
+                  type="number"
                   fullWidth
                   value={form.author.weight}
                   onChange={(e) => change("author.weight", e.target.value)}
@@ -644,6 +653,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                   <Grid item size={{ xs: 12, md: 3 }}>
                     <TextField
                       label="Location X (Double)"
+                      type="number"
                       fullWidth
                       value={form.author.location.x}
                       onChange={(e) =>
@@ -656,6 +666,7 @@ export default function LabForm({ initial = null, onSubmit, onCancel }) {
                   <Grid item size={{ xs: 12, md: 3 }}>
                     <TextField
                       label="Location Y (Long)"
+                      type="number"
                       fullWidth
                       value={form.author.location.y}
                       onChange={(e) =>
