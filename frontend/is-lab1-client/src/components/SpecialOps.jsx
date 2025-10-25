@@ -16,7 +16,8 @@ import {
   Stack,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { labApi } from "../api";
+import { labApi } from "../api/index";
+import { formatDateTime } from "../utils/formatters";
 
 export default function SpecialOps() {
   const [sum, setSum] = useState(null);
@@ -38,13 +39,6 @@ export default function SpecialOps() {
       return da.localeCompare(db);
     });
   }, [groups, hasGroups]);
-
-  function formatDate(value) {
-    if (!value) return "-";
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return String(value);
-    return date.toLocaleString();
-  }
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
@@ -133,7 +127,9 @@ export default function SpecialOps() {
                                     lw.difficulty ?? "-"
                                   } · Min: ${lw.minimalPoint ?? "-"} · Max: ${
                                     lw.maximumPoint ?? "-"
-                                  } · Created: ${formatDate(lw.creationDate)}`}
+                                  } · Created: ${formatDateTime(
+                                    lw.creationDate
+                                  )}`}
                                 />
                               </ListItemButton>
                             </ListItem>

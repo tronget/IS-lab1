@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { labApi, subscribeToWs } from "../api";
+import { labApi, subscribeToWs } from "../api/index";
+import { getNested } from "../utils/object";
+import { formatDateTime } from "../utils/formatters";
 import {
   Paper,
   IconButton,
@@ -16,18 +18,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link } from "react-router-dom";
-import LabForm from "./LabForm";
-
-function getNested(obj, path) {
-  if (!path) return undefined;
-  const parts = path.split(".");
-  let cur = obj;
-  for (const p of parts) {
-    if (cur == null) return undefined;
-    cur = cur[p];
-  }
-  return cur;
-}
+import LabForm from "./lab-form/LabForm";
 
 export default function LabList() {
   const [items, setItems] = useState([]);
@@ -188,9 +179,7 @@ export default function LabList() {
       headerName: "Creation Date",
       minWidth: 200,
       valueGetter: (creationDate) => {
-        if (!creationDate) return "-";
-        const d = new Date(creationDate);
-        return Number.isNaN(d.getTime()) ? creationDate : d.toLocaleString();
+        return formatDateTime(creationDate);
       },
     },
     {

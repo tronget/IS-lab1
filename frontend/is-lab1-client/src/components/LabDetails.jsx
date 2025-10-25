@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { labApi } from "../api";
+import { labApi } from "../api/index";
 import {
   Typography,
   Paper,
-  Grid,
   Button,
   Dialog,
   DialogTitle,
   DialogContent,
-  Divider,
-  Stack,
+  Grid,
 } from "@mui/material";
-import LabForm from "./LabForm";
+
+import LabForm from "./lab-form/LabForm";
+import InfoCard from "./common/InfoCard";
+import { formatDateTime } from "../utils/formatters";
 
 export default function LabDetails() {
   const { id } = useParams();
@@ -52,17 +53,6 @@ export default function LabDetails() {
   if (loading) return <div>Loading...</div>;
   if (!lab) return <div>Not found</div>;
 
-  function formatDate(value) {
-    if (!value) return "-";
-    try {
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return String(value);
-      return date.toLocaleString();
-    } catch {
-      return String(value);
-    }
-  }
-
   const coordinates = lab.coordinates ?? {};
   const author = lab.author ?? {};
   const location = author.location ?? {};
@@ -75,100 +65,47 @@ export default function LabDetails() {
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid
-          item
-          size={{ xs: 12, md: 8 }}
-          boxShadow={2}
-          p={1.5}
-          borderRadius={1}
-        >
-          <Stack spacing={1}>
-            <Typography variant="subtitle1">Lab overview</Typography>
-            <Divider />
-            <DetailRow label="Description" value={lab.description} />
-            <DetailRow label="Difficulty" value={lab.difficulty} />
-            <DetailRow label="Minimal point" value={lab.minimalPoint} />
-            <DetailRow label="Maximum point" value={lab.maximumPoint} />
-            <DetailRow label="Tuned-in works" value={lab.tunedInWorks} />
-            <DetailRow label="Created" value={formatDate(lab.creationDate)} />
-          </Stack>
-        </Grid>
+        <InfoCard title="Lab overview" size={{ xs: 12, md: 8 }}>
+          <DetailRow label="Description" value={lab.description} />
+          <DetailRow label="Difficulty" value={lab.difficulty} />
+          <DetailRow label="Minimal point" value={lab.minimalPoint} />
+          <DetailRow label="Maximum point" value={lab.maximumPoint} />
+          <DetailRow label="Tuned-in works" value={lab.tunedInWorks} />
+          <DetailRow label="Created" value={formatDateTime(lab.creationDate)} />
+        </InfoCard>
 
-        <Grid
-          item
-          size={{ xs: 12, md: 4 }}
-          boxShadow={2}
-          p={1.5}
-          borderRadius={1}
-        >
-          <Stack spacing={1}>
-            <Typography variant="subtitle1">Discipline</Typography>
-            <Divider />
-            <DetailRow label="ID" value={discipline.id} />
-            <DetailRow label="Name" value={discipline.name} />
-            <DetailRow
-              label="Practice hours"
-              value={discipline.practiceHours}
-            />
-            <DetailRow
-              label="Self-study hours"
-              value={discipline.selfStudyHours}
-            />
-            <DetailRow label="Labs count" value={discipline.labsCount} />
-          </Stack>
-        </Grid>
+        <InfoCard title="Discipline">
+          <DetailRow label="ID" value={discipline.id} />
+          <DetailRow label="Name" value={discipline.name} />
+          <DetailRow label="Practice hours" value={discipline.practiceHours} />
+          <DetailRow
+            label="Self-study hours"
+            value={discipline.selfStudyHours}
+          />
+          <DetailRow label="Labs count" value={discipline.labsCount} />
+        </InfoCard>
 
-        <Grid
-          item
-          size={{ xs: 12, md: 4 }}
-          boxShadow={2}
-          p={1.5}
-          borderRadius={1}
-        >
-          <Stack spacing={1}>
-            <Typography variant="subtitle1">Coordinates</Typography>
-            <Divider />
-            <DetailRow label="ID" value={coordinates.id} />
-            <DetailRow label="X" value={coordinates.x} />
-            <DetailRow label="Y" value={coordinates.y} />
-          </Stack>
-        </Grid>
+        <InfoCard title="Coordinates">
+          <DetailRow label="ID" value={coordinates.id} />
+          <DetailRow label="X" value={coordinates.x} />
+          <DetailRow label="Y" value={coordinates.y} />
+        </InfoCard>
 
-        <Grid
-          item
-          size={{ xs: 12, md: 4 }}
-          boxShadow={2}
-          p={1.5}
-          borderRadius={1}
-        >
-          <Stack spacing={1}>
-            <Typography variant="subtitle1">Author</Typography>
-            <Divider />
-            <DetailRow label="ID" value={author.id} />
-            <DetailRow label="Name" value={author.name} />
-            <DetailRow label="Eye color" value={author.eyeColor} />
-            <DetailRow label="Hair color" value={author.hairColor} />
-            <DetailRow label="Weight" value={author.weight} />
-            <DetailRow label="Nationality" value={author.nationality} />
-          </Stack>
-        </Grid>
+        <InfoCard title="Author">
+          <DetailRow label="ID" value={author.id} />
+          <DetailRow label="Name" value={author.name} />
+          <DetailRow label="Eye color" value={author.eyeColor} />
+          <DetailRow label="Hair color" value={author.hairColor} />
+          <DetailRow label="Weight" value={author.weight} />
+          <DetailRow label="Nationality" value={author.nationality} />
+        </InfoCard>
 
-        <Grid
-          item
-          size={{ xs: 12, md: 4 }}
-          boxShadow={2}
-          p={1.5}
-          borderRadius={1}
-        >
-          <Stack spacing={1}>
-            <Typography variant="subtitle1">Author location</Typography>
-            <Divider />
-            <DetailRow label="ID" value={location.id} />
-            <DetailRow label="Name" value={location.name} />
-            <DetailRow label="X" value={location.x} />
-            <DetailRow label="Y" value={location.y} />
-          </Stack>
-        </Grid>
+        <InfoCard title="Author location">
+          <DetailRow label="ID" value={location.id} />
+          <DetailRow label="Name" value={location.name} />
+          <DetailRow label="X" value={location.x} />
+          <DetailRow label="Y" value={location.y} />
+        </InfoCard>
       </Grid>
 
       <div style={{ marginTop: 16 }}>
