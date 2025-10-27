@@ -1,0 +1,472 @@
+openapi: 3.1.0
+info:
+  title: IS-lab1 API
+  description: "REST API for LabWork management with related entities (Discipline,\
+    \ Person, Coordinates, Location)"
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  version: 0.0.1-SNAPSHOT
+externalDocs:
+  description: Project README
+  url: https://example.com/
+servers:
+- url: http://localhost:9090
+  description: Generated server url
+paths:
+  /api/labworks/{labId}/add-to-discipline/{disciplineId}:
+    put:
+      tags:
+      - lab-work-controller
+      operationId: addToDiscipline
+      parameters:
+      - name: labId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: disciplineId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+  /api/labworks/{id}:
+    get:
+      tags:
+      - lab-work-controller
+      operationId: getLabWork
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/LabWorkResponseDto"
+    put:
+      tags:
+      - lab-work-controller
+      operationId: update
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LabWorkRequestDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/LabWorkResponseDto"
+    delete:
+      tags:
+      - lab-work-controller
+      operationId: delete
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+  /api/labworks:
+    get:
+      tags:
+      - lab-work-controller
+      operationId: getAllLabWorks
+      parameters:
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: size
+        in: query
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 5
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PageLabWorkResponseDto"
+    post:
+      tags:
+      - lab-work-controller
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LabWorkRequestDto"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/LabWorkResponseDto"
+  /api/persons:
+    get:
+      tags:
+      - person-controller
+      operationId: getAllPersons
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PersonDto"
+  /api/locations:
+    get:
+      tags:
+      - location-controller
+      operationId: getAllLocations
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LocationDto"
+  /api/labworks/sum-maximum-point:
+    get:
+      tags:
+      - lab-work-controller
+      operationId: sumMaximumPoint
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: number
+                format: double
+  /api/labworks/group-by-description:
+    get:
+      tags:
+      - lab-work-controller
+      operationId: groupByDescription
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GroupByDescriptionDto"
+  /api/labworks/count-by-tunedInWorks:
+    get:
+      tags:
+      - lab-work-controller
+      operationId: countByTunedInWorks
+      parameters:
+      - name: tunedInWorks
+        in: query
+        required: true
+        schema:
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: integer
+                format: int32
+  /api/disciplines:
+    get:
+      tags:
+      - discipline-controller
+      operationId: getAllDisciplines
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DisciplineDto"
+  /api/coordinates:
+    get:
+      tags:
+      - coordinates-controller
+      operationId: getAllCoordinates
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CoordinatesDto"
+  /api/labworks/{labId}/remove-from-discipline/{disciplineId}:
+    delete:
+      tags:
+      - lab-work-controller
+      operationId: removeFromDiscipline
+      parameters:
+      - name: labId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: disciplineId
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    CoordinatesDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        x:
+          type: integer
+          format: int64
+        "y":
+          type: number
+          format: float
+    DisciplineDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        practiceHours:
+          type: integer
+          format: int64
+        selfStudyHours:
+          type: integer
+          format: int32
+        labsCount:
+          type: integer
+          format: int32
+    LabWorkRequestDto:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        difficulty:
+          type: string
+          enum:
+          - VERY_EASY
+          - NORMAL
+          - VERY_HARD
+        minimalPoint:
+          type: number
+          format: float
+        maximumPoint:
+          type: number
+          format: double
+        tunedInWorks:
+          type: integer
+          format: int32
+        author:
+          $ref: "#/components/schemas/PersonDto"
+        discipline:
+          $ref: "#/components/schemas/DisciplineDto"
+        coordinates:
+          $ref: "#/components/schemas/CoordinatesDto"
+    LocationDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        x:
+          type: number
+          format: double
+        "y":
+          type: integer
+          format: int64
+        name:
+          type: string
+    PersonDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        eyeColor:
+          type: string
+          enum:
+          - RED
+          - YELLOW
+          - ORANGE
+          - WHITE
+        hairColor:
+          type: string
+          enum:
+          - RED
+          - YELLOW
+          - ORANGE
+          - WHITE
+        location:
+          $ref: "#/components/schemas/LocationDto"
+        weight:
+          type: number
+          format: float
+        nationality:
+          type: string
+          enum:
+          - USA
+          - FRANCE
+          - CHINA
+          - ITALY
+          - THAILAND
+    LabWorkResponseDto:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        description:
+          type: string
+        difficulty:
+          type: string
+          enum:
+          - VERY_EASY
+          - NORMAL
+          - VERY_HARD
+        minimalPoint:
+          type: number
+          format: float
+        maximumPoint:
+          type: number
+          format: double
+        tunedInWorks:
+          type: integer
+          format: int32
+        creationDate:
+          type: string
+          format: date-time
+        author:
+          $ref: "#/components/schemas/PersonDto"
+        discipline:
+          $ref: "#/components/schemas/DisciplineDto"
+        coordinates:
+          $ref: "#/components/schemas/CoordinatesDto"
+    PageLabWorkResponseDto:
+      type: object
+      properties:
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        size:
+          type: integer
+          format: int32
+        content:
+          type: array
+          items:
+            $ref: "#/components/schemas/LabWorkResponseDto"
+        number:
+          type: integer
+          format: int32
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        numberOfElements:
+          type: integer
+          format: int32
+        pageable:
+          $ref: "#/components/schemas/PageableObject"
+        empty:
+          type: boolean
+    PageableObject:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        sort:
+          $ref: "#/components/schemas/SortObject"
+        paged:
+          type: boolean
+        pageNumber:
+          type: integer
+          format: int32
+        pageSize:
+          type: integer
+          format: int32
+        unpaged:
+          type: boolean
+    SortObject:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+    GroupByDescriptionDto:
+      type: object
+      properties:
+        description:
+          type: string
+        labWorks:
+          type: array
+          items:
+            $ref: "#/components/schemas/LabWorkResponseDto"
