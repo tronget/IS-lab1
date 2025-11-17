@@ -1,6 +1,6 @@
 import { TextField, Grid } from "@mui/material";
-import SectionCard from "../shared/SectionCard";
-import ExistingEntitySelect from "../shared/ExistingEntitySelect";
+import SectionCard from "../shared/SectionCard.jsx";
+import ExistingEntitySelect from "../shared/ExistingEntitySelect.jsx";
 
 export default function CoordinatesSection({ form, errors, change, options }) {
   return (

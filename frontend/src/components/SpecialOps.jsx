@@ -16,8 +16,8 @@ import {
   Stack,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { labApi } from "../api/index";
-import { formatDateTime } from "../utils/formatters";
+import { labApi } from "../api/index.js";
+import { formatDateTime } from "../utils/formatters.js";
 
 export default function SpecialOps() {
   const [sum, setSum] = useState(null);

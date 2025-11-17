@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { labApi, subscribeToWs } from "../api/index";
-import { getNested } from "../utils/object";
-import { formatDateTime } from "../utils/formatters";
+import { labApi, subscribeToWs } from "../api/index.js";
+import { getNested } from "../utils/object.js";
+import { formatDateTime } from "../utils/formatters.js";
 import {
   Paper,
   IconButton,
@@ -18,7 +18,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link } from "react-router-dom";
-import LabForm from "./lab-form/LabForm";
+import LabForm from "./lab-form/LabForm.jsx";
 
 export default function LabList() {
   const [items, setItems] = useState([]);

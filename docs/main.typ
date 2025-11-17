@@ -161,7 +161,7 @@ public enum Country {
 #pagebreak()
 
 = Ссылка на репозиторий с исходным кодом
-GitHub: https://github.com/tronget/IS-lab1
+GitHub: https://github.com/tronget/labwork-manager
 
 = Вывод
 В ходе лабораторной работы были изучены и применены следующие технологии:\

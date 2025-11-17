@@ -7,9 +7,9 @@ import {
   Container,
   Box,
 } from "@mui/material";
-import LabList from "./components/LabList";
-import LabDetails from "./components/LabDetails";
-import SpecialOps from "./components/SpecialOps";
+import LabList from "./components/LabList.jsx";
+import LabDetails from "./components/LabDetails.jsx";
+import SpecialOps from "./components/SpecialOps.jsx";
 
 export default function App() {
   return (

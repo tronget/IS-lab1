@@ -1,10 +1,10 @@
 import { Client } from "@stomp/stompjs";
 import SockJS from "sockjs-client/dist/sockjs";
-import { API_BASE } from "./client";
+import { API_BASE } from "./client.js";
 
 export function subscribeToWs(onMessage) {
   const url =
-    (API_BASE.endsWith("/") ? API_BASE.slice(0, -1) : API_BASE) + "/is-lab1";
+    (API_BASE.endsWith("/") ? API_BASE.slice(0, -1) : API_BASE) + "/labwork-manager";
 
   const client = new Client({
     webSocketFactory: () => new SockJS(url),

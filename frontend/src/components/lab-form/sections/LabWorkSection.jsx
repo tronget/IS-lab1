@@ -6,7 +6,7 @@ import {
   MenuItem,
   Grid,
 } from "@mui/material";
-import SectionCard from "../shared/SectionCard";
+import SectionCard from "../shared/SectionCard.jsx";
 
 export default function LabWorkSection({
   form,

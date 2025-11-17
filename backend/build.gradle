@@ -6,11 +6,11 @@ plugins {
 
 group = 'com.tronget'
 version = '0.0.1-SNAPSHOT'
-description = 'IS-lab1'
+description = 'labwork-manager'
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 

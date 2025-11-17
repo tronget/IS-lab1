@@ -5,12 +5,12 @@ import {
   coordinatesApi,
   personApi,
   locationApi,
-} from "../../api";
-import { cloneEmptyForm, difficulties, colors, countries } from "./constants";
-import LabWorkSection from "./sections/LabWorkSection";
-import DisciplineSection from "./sections/DisciplineSection";
-import CoordinatesSection from "./sections/CoordinatesSection";
-import AuthorSection from "./sections/AuthorSection";
+} from "../../api/index.js";
+import { cloneEmptyForm, difficulties, colors, countries } from "./constants.js";
+import LabWorkSection from "./sections/LabWorkSection.jsx";
+import DisciplineSection from "./sections/DisciplineSection.jsx";
+import CoordinatesSection from "./sections/CoordinatesSection.jsx";
+import AuthorSection from "./sections/AuthorSection.jsx";
 
 function deepClone(value) {
   return JSON.parse(JSON.stringify(value));

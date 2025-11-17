@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { labApi } from "../api/index";
+import { labApi } from "../api/index.js";
 import {
   Typography,
   Paper,
@@ -11,9 +11,9 @@ import {
   Grid,
 } from "@mui/material";
 
-import LabForm from "./lab-form/LabForm";
-import InfoCard from "./common/InfoCard";
-import { formatDateTime } from "../utils/formatters";
+import LabForm from "./lab-form/LabForm.jsx";
+import InfoCard from "./common/InfoCard.jsx";
+import { formatDateTime } from "../utils/formatters.js";
 
 export default function LabDetails() {
   const { id } = useParams();

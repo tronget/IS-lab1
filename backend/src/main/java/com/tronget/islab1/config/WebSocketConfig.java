@@ -20,7 +20,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry
-                .addEndpoint("/is-lab1")
+                .addEndpoint("/labwork-manager")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }

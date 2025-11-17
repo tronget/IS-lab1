@@ -1,6 +1,6 @@
 openapi: 3.1.0
 info:
-  title: IS-lab1 API
+  title: labwork-manager API
   description: "REST API for LabWork management with related entities (Discipline,\
     \ Person, Coordinates, Location)"
   license:

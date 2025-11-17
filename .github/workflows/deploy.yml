@@ -38,11 +38,11 @@ jobs:
           node-version: 22
 
       - name: Install frontend dependencies
-        working-directory: ./frontend/is-lab1-client
+        working-directory: ./frontend
         run: npm ci
 
       - name: Build frontend
-        working-directory: ./frontend/is-lab1-client
+        working-directory: ./frontend
         run: npm run build
 
       - name: Upload backend artifact
@@ -55,7 +55,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: frontend_dist
-          path: frontend/is-lab1-client/dist/**
+          path: frontend/dist/**
 
   deploy:
     name: Deploy to Server
