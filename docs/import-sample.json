@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Lab Alpha",
+    "description": "Baseline Lab",
+    "difficulty": "VERY_HARD",
+    "minimalPoint": 10,
+    "maximumPoint": 100,
+    "tunedInWorks": 1,
+    "coordinates": {
+      "x": 10.0,
+      "y": 20
+    },
+    "author": {
+      "name": "Alice",
+      "eyeColor": "YELLOW",
+      "hairColor": "RED",
+      "weight": 55.5,
+      "nationality": "USA",
+      "location": {
+        "x": 1.0,
+        "y": 2,
+        "name": "Seattle"
+      }
+    },
+    "discipline": {
+      "name": "Physics",
+      "practiceHours": 20,
+      "selfStudyHours": 10,
+      "labsCount": 3
+    }
+  },
+  {
+    "name": "Lab Beta",
+    "description": "Fourier Series Warmup",
+    "difficulty": "NORMAL",
+    "minimalPoint": 8,
+    "maximumPoint": 75,
+    "tunedInWorks": 2,
+    "coordinates": {
+      "x": -45.25,
+      "y": -12
+    },
+    "author": {
+      "name": "Bob",
+      "eyeColor": "GREENLIGHT",
+      "hairColor": "RED",
+      "weight": 78.2,
+      "nationality": "ITALY",
+      "location": {
+        "x": 12.34,
+        "y": -7,
+        "name": "Paris"
+      }
+    },
+    "discipline": {
+      "name": "Mathematics",
+      "practiceHours": 15,
+      "selfStudyHours": 5,
+      "labsCount": 1
+    }
+  }
+]

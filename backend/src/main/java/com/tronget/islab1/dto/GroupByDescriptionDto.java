@@ -1,6 +1,5 @@
 package com.tronget.islab1.dto;
 
-import com.tronget.islab1.models.LabWork;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

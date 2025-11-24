@@ -11,4 +11,6 @@ import java.util.List;
 public interface CoordinatesRepository extends CrudRepository<Coordinates, Long> {
     @NonNull
     List<Coordinates> findAll();
+
+    boolean existsByXAndY(long x, Float y);
 }

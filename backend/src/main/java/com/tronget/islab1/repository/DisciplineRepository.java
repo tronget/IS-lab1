@@ -11,4 +11,6 @@ import java.util.List;
 public interface DisciplineRepository extends CrudRepository<Discipline, Long> {
     @NonNull
     List<Discipline> findAll();
+
+    boolean existsByNameIgnoreCase(String name);
 }
