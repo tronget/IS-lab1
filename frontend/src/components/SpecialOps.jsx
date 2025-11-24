@@ -18,6 +18,7 @@ import {
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { labApi } from "../api/index.js";
 import { formatDateTime } from "../utils/formatters.js";
+import ImportHistory from "./ImportHistory.jsx";
 
 export default function SpecialOps() {
   const [sum, setSum] = useState(null);
@@ -221,6 +222,8 @@ export default function SpecialOps() {
           </Grid>
         </Grid>
       </Paper>
+
+      <ImportHistory />
     </div>
   );
 }

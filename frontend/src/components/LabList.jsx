@@ -19,8 +19,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Link } from "react-router-dom";
 import LabForm from "./lab-form/LabForm.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function LabList() {
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -52,8 +54,11 @@ export default function LabList() {
   }, [paginationModel.page, paginationModel.pageSize]);
 
   useEffect(() => {
+    if (!user) {
+      return;
+    }
     fetch();
-  }, [fetch]);
+  }, [fetch, user]);
 
   useEffect(() => {
     const unsub = subscribeToWs((msg) => {
@@ -98,15 +103,17 @@ export default function LabList() {
     return result;
   }, [items, filterField, filterValue, sort]);
 
-  function openCreate() {
+  const openCreate = useCallback(() => {
     setEditing(null);
     setDialogOpen(true);
-  }
-  function openEdit(item) {
+  }, []);
+
+  const openEdit = useCallback((item) => {
     setEditing(item);
     setDialogOpen(true);
-  }
-  function handleDelete(id) {
+  }, []);
+
+  const handleDelete = useCallback((id) => {
     if (!confirm("Delete?")) {
       return;
     }
@@ -116,7 +123,7 @@ export default function LabList() {
         alert("Delete successful");
       })
       .catch(() => alert("Delete failed"));
-  }
+  }, []);
 
   function handleSave(payload) {
     const action = editing
@@ -129,102 +136,109 @@ export default function LabList() {
       });
   }
 
-  const columns = [
-    { field: "id", headerName: "ID", width: 90 },
-    {
-      field: "name",
-      headerName: "Name",
-      minWidth: 160,
-      flex: 1,
-      renderCell: (params) => {
-        return <Link to={`/lab/${params.row.id}`}>{params.value}</Link>;
+  const columns = useMemo(() => {
+    const base = [
+      { field: "id", headerName: "ID", width: 90 },
+      {
+        field: "name",
+        headerName: "Name",
+        minWidth: 160,
+        flex: 1,
+        renderCell: (params) => {
+          return <Link to={`/lab/${params.row.id}`}>{params.value}</Link>;
+        },
       },
-    },
-    {
-      field: "description",
-      headerName: "Description",
-      minWidth: 200,
-      flex: 1,
-      valueGetter: (description) => description || "-",
-    },
-    {
-      field: "difficulty",
-      headerName: "Difficulty",
-      width: 140,
-      valueGetter: (difficulty) => difficulty || "-",
-    },
-    {
-      field: "minimalPoint",
-      headerName: "Minimal Point",
-      type: "number",
-      width: 140,
-      valueGetter: (minimalPoint) => minimalPoint || "-",
-    },
-    {
-      field: "maximumPoint",
-      headerName: "Maximum Point",
-      type: "number",
-      width: 150,
-      valueGetter: (maximumPoint) => maximumPoint || "-",
-    },
-    {
-      field: "tunedInWorks",
-      headerName: "Tuned In Works",
-      type: "number",
-      width: 150,
-      valueGetter: (tunedInWorks) => tunedInWorks || "-",
-    },
-    {
-      field: "creationDate",
-      headerName: "Creation Date",
-      minWidth: 200,
-      valueGetter: (creationDate) => {
-        return formatDateTime(creationDate);
+      {
+        field: "description",
+        headerName: "Description",
+        minWidth: 200,
+        flex: 1,
+        valueGetter: (description) => description || "-",
       },
-    },
-    {
-      field: "author",
-      headerName: "Author",
-      minWidth: 160,
-      valueGetter: (author) => author.name || "-",
-    },
-    {
-      field: "discipline",
-      headerName: "Discipline",
-      minWidth: 160,
-      valueGetter: (discipline) => discipline.name || "-",
-    },
-    {
-      field: "coordinates",
-      headerName: "Coordinates",
-      minWidth: 140,
-      valueGetter: (coords) => {
-        if (!coords) return "-";
-        return `{${coords.x}, ${coords.y}}`;
+      {
+        field: "difficulty",
+        headerName: "Difficulty",
+        width: 140,
+        valueGetter: (difficulty) => difficulty || "-",
       },
-    },
-    {
-      field: "actions",
-      headerName: "Actions",
-      sortable: false,
-      filterable: false,
-      width: 120,
-      renderCell: (params) => (
-        <>
-          <IconButton size="small" onClick={() => openEdit(params.row)}>
-            <EditIcon fontSize="inherit" />
-          </IconButton>
-          <IconButton
-            size="small"
-            color="error"
-            onClick={() => handleDelete(params.row.id)}
-          >
-            <DeleteIcon fontSize="inherit" />
-          </IconButton>
-        </>
-      ),
-    },
-  ];
+      {
+        field: "minimalPoint",
+        headerName: "Minimal Point",
+        type: "number",
+        width: 140,
+        valueGetter: (minimalPoint) => minimalPoint || "-",
+      },
+      {
+        field: "maximumPoint",
+        headerName: "Maximum Point",
+        type: "number",
+        width: 150,
+        valueGetter: (maximumPoint) => maximumPoint || "-",
+      },
+      {
+        field: "tunedInWorks",
+        headerName: "Tuned In Works",
+        type: "number",
+        width: 150,
+        valueGetter: (tunedInWorks) => tunedInWorks || "-",
+      },
+      {
+        field: "creationDate",
+        headerName: "Creation Date",
+        minWidth: 200,
+        valueGetter: (creationDate) => {
+          return formatDateTime(creationDate);
+        },
+      },
+      {
+        field: "author",
+        headerName: "Author",
+        minWidth: 160,
+        valueGetter: (author) => author.name || "-",
+      },
+      {
+        field: "discipline",
+        headerName: "Discipline",
+        minWidth: 160,
+        valueGetter: (discipline) => discipline.name || "-",
+      },
+      {
+        field: "coordinates",
+        headerName: "Coordinates",
+        minWidth: 140,
+        valueGetter: (coords) => {
+          if (!coords) return "-";
+          return `{${coords.x}, ${coords.y}}`;
+        },
+      },
+    ];
+
+    if (user) {
+      base.push({
+        field: "actions",
+        headerName: "Actions",
+        sortable: false,
+        filterable: false,
+        width: 120,
+        renderCell: (params) => (
+          <>
+            <IconButton size="small" onClick={() => openEdit(params.row)}>
+              <EditIcon fontSize="inherit" />
+            </IconButton>
+            <IconButton
+              size="small"
+              color="error"
+              onClick={() => handleDelete(params.row.id)}
+            >
+              <DeleteIcon fontSize="inherit" />
+            </IconButton>
+          </>
+        ),
+      });
+    }
+
+    return base;
+  }, [user, openEdit, handleDelete]);
 
   return (
     <div>
@@ -267,7 +281,12 @@ export default function LabList() {
             <MenuItem value="name,desc">name ↓</MenuItem>
             <MenuItem value="maximumPoint,desc">maxPoint ↓</MenuItem>
           </Select>
-          <Button variant="contained" sx={{ ml: 2 }} onClick={openCreate}>
+          <Button
+            variant="contained"
+            sx={{ ml: 2 }}
+            onClick={openCreate}
+            disabled={!user}
+          >
             Create
           </Button>
         </Grid>

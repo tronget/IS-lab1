@@ -6,7 +6,7 @@ import com.tronget.islab1.dto.LabWorkResponseDto;
 import com.tronget.islab1.exceptions.DisciplineNotFoundException;
 import com.tronget.islab1.exceptions.LabworkNotFoundException;
 import com.tronget.islab1.exceptions.ManualIdAssignmentException;
-import com.tronget.islab1.mappers.*;
+import com.tronget.islab1.mappers.LabWorkMapper;
 import com.tronget.islab1.models.Discipline;
 import com.tronget.islab1.models.LabWork;
 import com.tronget.islab1.repository.DisciplineRepository;
@@ -19,6 +19,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -35,30 +36,30 @@ public class LabWorkServiceImpl implements LabWorkService {
     private final LabWorkRepository labWorkRepository;
     private final DisciplineRepository disciplineRepository;
     private final LabWorkMapper mapper;
+    private final DomainConstraintValidator constraintValidator;
 
     @Autowired
     public LabWorkServiceImpl(
             LabWorkRepository labWorkRepository,
             DisciplineRepository disciplineRepository,
-            LabWorkMapper mapper
+            LabWorkMapper mapper,
+            DomainConstraintValidator constraintValidator
     ) {
         this.labWorkRepository = labWorkRepository;
         this.disciplineRepository = disciplineRepository;
         this.mapper = mapper;
+        this.constraintValidator = constraintValidator;
     }
-
 
     @Override
     public List<LabWork> findAll() {
         return labWorkRepository.findAll();
     }
 
-
     @Override
     public Page<LabWork> findAll(Pageable pageable) {
         return labWorkRepository.findAll(pageable);
     }
-
 
     @Override
     @Cacheable(
@@ -72,8 +73,8 @@ public class LabWorkServiceImpl implements LabWorkService {
                 .orElseThrow(() -> new LabworkNotFoundException(id));
     }
 
-
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @CachePut(
             cacheNames = LABWORK_BY_ID,
             key = "#result.id",
@@ -91,52 +92,42 @@ public class LabWorkServiceImpl implements LabWorkService {
         if (id != null && !labWorkRepository.existsById(id)) {
             throw new ManualIdAssignmentException();
         }
+        constraintValidator.validateLabWork(labWork);
         return labWorkRepository.save(labWork);
     }
 
-
     @Override
-    @Transactional
-    @CachePut(
-            cacheNames = LABWORK_BY_ID,
-            key = "#id",
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @CachePut(cacheNames = LABWORK_BY_ID, key = "#id",
             cacheManager = DEFAULT_CACHE_MANAGER,
-            condition = "#result != null && #result.id != null"
-    )
-    @CacheEvict(
-            cacheNames = COUNT_BY_TUNED_IN,
-            allEntries = true,
-            cacheManager = DEFAULT_CACHE_MANAGER
-    )
+            condition = "#result != null && #result.id != null")
+    @CacheEvict(cacheNames = COUNT_BY_TUNED_IN, allEntries = true,
+            cacheManager = DEFAULT_CACHE_MANAGER)
     public LabWork update(Long id, LabWorkRequestDto requestDto) {
         if (id == null) {
             return null;
         }
 
-        LabWork existing = labWorkRepository
-                .findById(id)
-                .orElseThrow(() -> new LabworkNotFoundException(id));
+        LabWork existing = labWorkRepository.findById(id).orElseThrow(
+                () -> new LabworkNotFoundException(id));
 
         mapper.setEntityValues(existing, requestDto);
+        constraintValidator.validateLabWork(existing);
 
         return labWorkRepository.save(existing);
     }
 
-
     @Override
-    @Caching(evict = {
-            @CacheEvict(
-                    cacheNames = LABWORK_BY_ID,
-                    key = "#id",
-                    cacheManager = DEFAULT_CACHE_MANAGER,
-                    condition = "#id != null"
-            ),
-            @CacheEvict(
-                    cacheNames = COUNT_BY_TUNED_IN,
-                    allEntries = true,
-                    cacheManager = DEFAULT_CACHE_MANAGER
-            )
-    })
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = LABWORK_BY_ID, key = "#id",
+                            cacheManager = DEFAULT_CACHE_MANAGER,
+                            condition = "#id != null")
+                    ,
+                    @CacheEvict(cacheNames = COUNT_BY_TUNED_IN, allEntries = true,
+                            cacheManager = DEFAULT_CACHE_MANAGER)
+            })
     public void delete(Long id) {
         if (id == null) {
             throw new IllegalArgumentException("id must not be null");
@@ -146,6 +137,7 @@ public class LabWorkServiceImpl implements LabWorkService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public double sumMaximumPoint() {
         List<LabWork> labworks = labWorkRepository.findAll();
 
@@ -159,6 +151,7 @@ public class LabWorkServiceImpl implements LabWorkService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<GroupByDescriptionDto> groupByDescription() {
         List<LabWork> labworks = findAll();
         Map<String, List<LabWorkResponseDto>> labworksByDescription = labworks
@@ -176,6 +169,7 @@ public class LabWorkServiceImpl implements LabWorkService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     @Cacheable(
             cacheNames = COUNT_BY_TUNED_IN,
             key = "#tunedInWorks",
@@ -186,20 +180,18 @@ public class LabWorkServiceImpl implements LabWorkService {
     }
 
     @Override
-    @Caching(evict = {
-            @CacheEvict(
-                    cacheNames = LABWORK_BY_ID,
-                    key = "#labId",
-                    cacheManager = DEFAULT_CACHE_MANAGER,
-                    condition = "#labId != null && #disciplineId != null"
-            ),
-            @CacheEvict(
-                    cacheNames = COUNT_BY_TUNED_IN,
-                    allEntries = true,
-                    cacheManager = DEFAULT_CACHE_MANAGER,
-                    condition = "#labId != null && #disciplineId != null"
-            )
-    })
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Caching(evict =
+            {
+                    @CacheEvict(cacheNames = LABWORK_BY_ID, key = "#labId",
+                            cacheManager = DEFAULT_CACHE_MANAGER,
+                            condition = "#labId != null && #disciplineId != null")
+                    ,
+                    @CacheEvict(cacheNames = COUNT_BY_TUNED_IN, allEntries = true,
+                            cacheManager = DEFAULT_CACHE_MANAGER,
+                            condition =
+                                    "#labId != null && #disciplineId != null")
+            })
     public void addToDiscipline(Long labId, Long disciplineId) {
         LabWork labWork = labWorkRepository
                 .findById(labId)
@@ -214,6 +206,7 @@ public class LabWorkServiceImpl implements LabWorkService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
     @Caching(evict = {
             @CacheEvict(
                     cacheNames = LABWORK_BY_ID,

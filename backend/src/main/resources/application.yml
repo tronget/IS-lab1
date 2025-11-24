@@ -13,3 +13,7 @@ spring:
 server:
   port: 9091
 
+app:
+  security:
+    jwt-secret: ${APP_JWT_SECRET}
+    jwt-expiration-seconds: ${APP_JWT_EXPIRATION:3600}

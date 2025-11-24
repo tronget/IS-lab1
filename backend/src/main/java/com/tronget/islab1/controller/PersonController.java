@@ -3,7 +3,6 @@ package com.tronget.islab1.controller;
 import com.tronget.islab1.dto.PersonDto;
 import com.tronget.islab1.mappers.PersonMapper;
 import com.tronget.islab1.models.Person;
-import com.tronget.islab1.service.FindAllService;
 import com.tronget.islab1.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
